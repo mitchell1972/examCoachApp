@@ -26,12 +26,20 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       return 'Please enter your phone number';
     }
     
-    // Remove any non-digit characters
-    final cleanNumber = value.replaceAll(RegExp(r'[^\d]'), '');
+    // Remove any non-digit characters except + for country code
+    final cleanNumber = value.replaceAll(RegExp(r'[^\d+]'), '');
     
-    // Check if it's a valid Nigerian number format
-    if (cleanNumber.length < 10 || cleanNumber.length > 14) {
-      return 'Please enter a valid phone number';
+    // Check for valid international format
+    if (cleanNumber.startsWith('+')) {
+      // International format: +countrycode + number
+      if (cleanNumber.length < 10 || cleanNumber.length > 16) {
+        return 'Please enter a valid international phone number';
+      }
+    } else {
+      // Local format without country code
+      if (cleanNumber.length < 10 || cleanNumber.length > 15) {
+        return 'Please enter a valid phone number';
+      }
     }
     
     return null;
@@ -48,7 +56,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       // Simulate sending OTP
       await Future.delayed(const Duration(seconds: 2));
       
-      final cleanPhoneNumber = _phoneController.text.replaceAll(RegExp(r'[^\d]'), '');
+      final cleanPhoneNumber = _phoneController.text.replaceAll(RegExp(r'[^\d+]'), '');
       final userModel = UserModel(phoneNumber: cleanPhoneNumber);
       
       if (mounted) {
@@ -132,7 +140,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   const SizedBox(height: 12),
                   
                   Text(
-                    'Enter your phone number to receive an OTP',
+                    'Enter your phone number with country code to receive an OTP',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white.withOpacity(0.9),
@@ -155,7 +163,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ),
                     decoration: InputDecoration(
                       labelText: 'Phone Number',
-                      hintText: '2348012345678',
+                      hintText: '+1234567890 or 1234567890',
                       labelStyle: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                       ),
