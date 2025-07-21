@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'phone_input_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -55,13 +56,15 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 
-                // Sign Up Button
+                                // Sign Up Button
                 ElevatedButton(
                   onPressed: () {
-                    // TODO: Navigate to sign up screen
-                                         ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(content: Text('Sign Up pressed!')),
-                     );
+                    // Navigate to phone input screen
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const PhoneInputScreen(),
+                      ),
+                    );
                   },
                                      style: ElevatedButton.styleFrom(
                      backgroundColor: Colors.white,
