@@ -12,7 +12,7 @@ class FirebaseAuthService {
   factory FirebaseAuthService() => _instance;
   FirebaseAuthService._internal();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final FirebaseAuth _auth;
   final Logger _logger = Logger();
   final Connectivity _connectivity = Connectivity();
 
@@ -28,20 +28,27 @@ class FirebaseAuthService {
   static const Duration _sendCooldown = Duration(minutes: 1);
   static const Duration _verificationTimeout = Duration(seconds: 120);
 
+  bool _initialized = false;
+  bool _initFailed = false;
+
   /// Initialize Firebase Authentication
   Future<void> initialize() async {
+    if (_initialized || _initFailed) return;
     try {
       await Firebase.initializeApp(
         options: _getFirebaseOptions(),
       );
       
+      _auth = FirebaseAuth.instance;
+      
       // Set language code for SMS
       await _auth.setLanguageCode('en');
       
       _logger.i('Firebase Auth initialized successfully');
+      _initialized = true;
     } catch (error, stackTrace) {
       _logger.e('Failed to initialize Firebase Auth', error: error, stackTrace: stackTrace);
-      rethrow;
+      _initFailed = true;
     }
   }
 
@@ -66,6 +73,12 @@ class FirebaseAuthService {
 
   /// Send OTP to phone number with comprehensive security checks
   Future<PhoneVerificationResult> sendOTP(String phoneNumber) async {
+    if (_initFailed) {
+      return PhoneVerificationResult.error(
+        PhoneAuthError.unknown,
+        'Firebase not initialized. Please check configuration.',
+      );
+    }
     try {
       // Validate input
       if (!_isValidPhoneNumber(phoneNumber)) {
@@ -191,6 +204,11 @@ class FirebaseAuthService {
 
   /// Verify OTP code with security validation
   Future<OTPVerificationResult> verifyOTP(String otpCode) async {
+    if (_initFailed) {
+      return OTPVerificationResult.error(
+        'Firebase not initialized. Please check configuration.',
+      );
+    }
     try {
       if (_verificationId == null) {
         return OTPVerificationResult.error(
