@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
-import '../services/error_handler.dart';
-import '../services/security_service.dart';
 import '../services/app_config.dart';
+import '../services/error_handler.dart';
 
 /// Secure and accessible onboarding screen with Sign Up and Login options
 class OnboardingScreen extends StatefulWidget {

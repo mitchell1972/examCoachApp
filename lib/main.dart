@@ -110,7 +110,7 @@ class ExamCoachApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Add providers here as the app grows
-        ChangeNotifierProvider(create: (_) => AppConfig()),
+        ChangeNotifierProvider.value(value: AppConfig.instance),
       ],
       child: MaterialApp(
         title: 'Exam Coach App',

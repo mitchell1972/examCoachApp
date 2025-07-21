@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'security_service.dart';
 import 'app_config.dart';
+import 'security_service.dart';
 
 /// Comprehensive error handling service
 class ErrorHandler {
