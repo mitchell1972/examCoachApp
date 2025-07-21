@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'screens/onboarding_screen.dart';
 
 void main() {
-  runApp(ExamCoachApp());
+  runApp(const ExamCoachApp());
 }
 
 class ExamCoachApp extends StatelessWidget {
+  const ExamCoachApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +16,7 @@ class ExamCoachApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         useMaterial3: true,
       ),
-      home: OnboardingScreen(),
+      home: const OnboardingScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

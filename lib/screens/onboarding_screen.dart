@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatelessWidget {
+  const OnboardingScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,21 +19,21 @@ class OnboardingScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // App Logo/Icon
-                Icon(
+                const Icon(
                   Icons.school,
                   size: 80,
                   color: Colors.white,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 
                 // App Title
-                Text(
+                const Text(
                   'Exam Coach',
                   style: TextStyle(
                     fontSize: 32,
@@ -40,7 +42,7 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 
                 // Subtitle
                 Text(
@@ -51,57 +53,57 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 48),
                 
                 // Sign Up Button
                 ElevatedButton(
                   onPressed: () {
                     // TODO: Navigate to sign up screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Sign Up pressed!')),
-                    );
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(content: Text('Sign Up pressed!')),
+                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.deepPurple,
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                                     style: ElevatedButton.styleFrom(
+                     backgroundColor: Colors.white,
+                     foregroundColor: Colors.deepPurple,
+                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
+                                     child: const Text(
+                     'Sign Up',
+                     style: TextStyle(
+                       fontSize: 18,
+                       fontWeight: FontWeight.bold,
+                     ),
+                   ),
+                                 ),
+                 const SizedBox(height: 16),
                 
                 // Login Button
                 OutlinedButton(
                   onPressed: () {
                     // TODO: Navigate to login screen
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Login pressed!')),
-                    );
+                                         ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(content: Text('Login pressed!')),
+                     );
                   },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: BorderSide(color: Colors.white, width: 2),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                                     style: OutlinedButton.styleFrom(
+                     foregroundColor: Colors.white,
+                     side: const BorderSide(color: Colors.white, width: 2),
+                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                                     child: const Text(
+                     'Login',
+                     style: TextStyle(
+                       fontSize: 18,
+                       fontWeight: FontWeight.bold,
+                     ),
+                   ),
                 ),
               ],
             ),
