@@ -15,6 +15,16 @@ dependencies:
   provider: ^6.0.0
   logger: ^2.0.0
   flutter_secure_storage: ^9.0.0
+  
+  # Firebase Authentication
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.15.0
+  
+  # HTTP requests for additional API calls if needed
+  http: ^1.1.0
+  
+  # Connectivity checking
+  connectivity_plus: ^5.0.0
 
 dev_dependencies:
   flutter_test:

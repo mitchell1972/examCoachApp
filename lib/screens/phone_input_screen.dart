@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import '../models/user_model.dart';
+import '../services/firebase_auth_service.dart';
 import 'otp_verification_screen.dart';
 
 class PhoneInputScreen extends StatefulWidget {
@@ -13,6 +15,8 @@ class PhoneInputScreen extends StatefulWidget {
 class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FirebaseAuthService _authService = FirebaseAuthService();
+  final Logger _logger = Logger();
   bool _isLoading = false;
 
   @override
@@ -53,34 +57,86 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     });
 
     try {
-      // Simulate sending OTP
-      await Future.delayed(const Duration(seconds: 2));
-      
-      final cleanPhoneNumber = _phoneController.text.replaceAll(RegExp(r'[^\d+]'), '');
-      final userModel = UserModel(phoneNumber: cleanPhoneNumber);
-      
-      if (mounted) {
+      final phoneNumber = _phoneController.text.trim();
+      _logger.i('Attempting to send OTP to phone number');
+
+      // Use Firebase Authentication Service to send real OTP
+      final result = await _authService.sendOTP(phoneNumber);
+
+      if (!mounted) return;
+
+      if (result.isSuccess) {
+        // Create user model with phone number and verification ID
+        final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+        final userModel = UserModel(phoneNumber: cleanPhoneNumber);
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('OTP sent successfully!'),
+            content: Text('✅ OTP sent successfully! Check your SMS.'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
           ),
         );
 
-        // Navigate to OTP verification
+        // Navigate to OTP verification with Firebase verification ID
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => OTPVerificationScreen(userModel: userModel),
+            builder: (context) => OTPVerificationScreen(
+              userModel: userModel,
+              verificationId: result.verificationId!,
+            ),
+          ),
+        );
+      } else {
+        // Handle different types of errors with appropriate user messages
+        String errorMessage = 'Failed to send OTP. Please try again.';
+        
+        if (result.errorType != null) {
+          switch (result.errorType!) {
+            case PhoneAuthError.invalidPhoneNumber:
+              errorMessage = 'Invalid phone number format. Please enter a valid number with country code.';
+              break;
+            case PhoneAuthError.tooManyRequests:
+              errorMessage = result.errorMessage ?? 'Too many requests. Please wait before trying again.';
+              break;
+            case PhoneAuthError.networkError:
+              errorMessage = 'Network error. Please check your internet connection.';
+              break;
+            case PhoneAuthError.operationNotAllowed:
+              errorMessage = 'Phone authentication is temporarily unavailable. Please try again later.';
+              break;
+            default:
+              errorMessage = result.errorMessage ?? 'An unexpected error occurred.';
+          }
+        }
+
+        _logger.w('OTP send failed: ${result.errorMessage}');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ $errorMessage'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+            action: result.errorType == PhoneAuthError.networkError
+                ? SnackBarAction(
+                    label: 'Retry',
+                    textColor: Colors.white,
+                    onPressed: _sendOTP,
+                  )
+                : null,
           ),
         );
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      _logger.e('Unexpected error during OTP send', error: error, stackTrace: stackTrace);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error sending OTP: $error'),
+          const SnackBar(
+            content: Text('❌ An unexpected error occurred. Please try again.'),
             backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
           ),
         );
       }

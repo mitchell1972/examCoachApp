@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import '../models/user_model.dart';
+import '../services/firebase_auth_service.dart';
 import 'exam_selection_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final UserModel userModel;
+  final String verificationId;
 
   const OTPVerificationScreen({
     Key? key,
     required this.userModel,
+    required this.verificationId,
   }) : super(key: key);
 
   @override
@@ -21,6 +25,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     (index) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+  final FirebaseAuthService _authService = FirebaseAuthService();
+  final Logger _logger = Logger();
   bool _isLoading = false;
   String _currentOTP = '';
 
@@ -56,7 +62,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     if (_currentOTP.length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter complete OTP'),
+          content: Text('❌ Please enter complete 6-digit OTP'),
           backgroundColor: Colors.red,
         ),
       );
@@ -68,17 +74,24 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     });
 
     try {
-      // Simulate OTP verification
-      await Future.delayed(const Duration(seconds: 2));
-      
-      // For demo purposes, accept any 6-digit OTP
-      widget.userModel.otpCode = _currentOTP;
-      
-      if (mounted) {
+      _logger.i('Attempting to verify OTP code');
+
+      // Use Firebase Authentication Service to verify real OTP
+      final result = await _authService.verifyOTP(_currentOTP);
+
+      if (!mounted) return;
+
+      if (result.isSuccess) {
+        // Store the verified OTP and Firebase user
+        widget.userModel.otpCode = _currentOTP;
+        
+        _logger.i('OTP verified successfully for user: ${result.user?.uid}');
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('OTP verified successfully!'),
+            content: Text('✅ Phone number verified successfully!'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
 
@@ -88,15 +101,46 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
             builder: (context) => ExamSelectionScreen(userModel: widget.userModel),
           ),
         );
-      }
-    } catch (error) {
-      if (mounted) {
+      } else {
+        // Handle verification failure with specific error messages
+        String errorMessage = result.errorMessage ?? 'Invalid OTP. Please try again.';
+        
+        _logger.w('OTP verification failed: $errorMessage');
+
+        // Clear OTP fields on error
+        _clearOTPFields();
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error verifying OTP: $error'),
+            content: Text('❌ $errorMessage'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Resend',
+              textColor: Colors.white,
+              onPressed: () => _resendOTP(),
+            ),
           ),
         );
+
+        // Focus on first OTP field for retry
+        _focusNodes[0].requestFocus();
+      }
+    } catch (error, stackTrace) {
+      _logger.e('Unexpected error during OTP verification', error: error, stackTrace: stackTrace);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ An unexpected error occurred. Please try again.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+
+        // Clear OTP fields and focus first field
+        _clearOTPFields();
+        _focusNodes[0].requestFocus();
       }
     } finally {
       if (mounted) {
@@ -108,25 +152,78 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 
   Future<void> _resendOTP() async {
-    // Show loading
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Resending OTP...'),
-        backgroundColor: Colors.blue,
-      ),
-    );
+    try {
+      _logger.i('Attempting to resend OTP');
 
-    // Simulate resending
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (mounted) {
+      // Show loading message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('OTP resent successfully!'),
-          backgroundColor: Colors.green,
+          content: Text('🔄 Resending OTP...'),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 2),
         ),
       );
+
+      // Use Firebase Authentication Service to resend OTP
+      final result = await _authService.resendOTP(widget.userModel.phoneNumber!);
+
+      if (!mounted) return;
+
+      if (result.isSuccess) {
+        // Clear current OTP fields
+        _clearOTPFields();
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ OTP resent successfully! Check your SMS.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // Focus on first OTP field
+        _focusNodes[0].requestFocus();
+      } else {
+        // Handle resend failure
+        String errorMessage = result.errorMessage ?? 'Failed to resend OTP. Please try again.';
+        
+        if (result.errorType == PhoneAuthError.tooManyRequests) {
+          errorMessage = 'Too many requests. Please wait before requesting another code.';
+        }
+
+        _logger.w('OTP resend failed: $errorMessage');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ $errorMessage'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (error, stackTrace) {
+      _logger.e('Unexpected error during OTP resend', error: error, stackTrace: stackTrace);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Failed to resend OTP. Please try again.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
     }
+  }
+
+  /// Clear all OTP input fields
+  void _clearOTPFields() {
+    for (var controller in _otpControllers) {
+      controller.clear();
+    }
+    setState(() {
+      _currentOTP = '';
+    });
   }
 
   @override
