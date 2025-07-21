@@ -121,7 +121,16 @@ class FirebaseAuthService {
           if (!completer.isCompleted) {
             try {
               final userCredential = await _auth.signInWithCredential(credential);
-              completer.complete(PhoneVerificationResult.autoVerified(userCredential.user));
+              
+              // Check if user exists before using it
+              if (userCredential.user != null) {
+                completer.complete(PhoneVerificationResult.autoVerified(userCredential.user!));
+              } else {
+                completer.complete(PhoneVerificationResult.error(
+                  PhoneAuthError.verificationFailed,
+                  'Authentication completed but user not found.',
+                ));
+              }
             } catch (error) {
               completer.complete(PhoneVerificationResult.error(
                 PhoneAuthError.verificationFailed,
@@ -207,12 +216,20 @@ class FirebaseAuthService {
       // Sign in with credential
       final userCredential = await _auth.signInWithCredential(credential);
       
-      _logger.i('OTP verified successfully for user: ${userCredential.user?.uid}');
-      
-      // Clear verification state
-      _clearVerificationState();
-      
-      return OTPVerificationResult.success(userCredential.user!);
+      // Check if user exists before using it
+      if (userCredential.user != null) {
+        _logger.i('OTP verified successfully for user: ${userCredential.user!.uid}');
+        
+        // Clear verification state
+        _clearVerificationState();
+        
+        return OTPVerificationResult.success(userCredential.user!);
+      } else {
+        _logger.e('OTP verification completed but user not found');
+        return OTPVerificationResult.error(
+          'Authentication completed but user not found. Please try again.',
+        );
+      }
       
     } on FirebaseAuthException catch (error) {
       _logger.e('OTP verification failed', error: error);
