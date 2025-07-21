@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic Meta Tags -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Exam Coach - Get personalized quizzes for your exam preparation">
+  <meta name="keywords" content="exam, coaching, quiz, education, study, preparation">
+  <meta name="author" content="Exam Coach Team">
+  
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Exam Coach - Personalized Quiz App">
+  <meta property="og:description" content="Get personalized quizzes for your exam preparation">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yourapp.github.io/examCoachApp/">
+  <meta property="og:image" content="https://yourapp.github.io/examCoachApp/icons/Icon-192.png">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Exam Coach - Personalized Quiz App">
+  <meta name="twitter:description" content="Get personalized quizzes for your exam preparation">
+  <meta name="twitter:image" content="https://yourapp.github.io/examCoachApp/icons/Icon-192.png">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="manifest.json">
+  
+  <title>Exam Coach - Personalized Quiz App</title>
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#673AB7">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#673AB7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Exam Coach">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="canvaskit/canvaskit.wasm" as="fetch" crossorigin="anonymous">
+  
+  <style>
+    /* Loading screen styles */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      overflow: hidden;
+    }
+    
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 9999;
+    }
+    
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-logo::before {
+      content: "🎓";
+      font-size: 40px;
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    .loading-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    /* Hide loading when Flutter is ready */
+    #loading.loaded {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading">
+    <div class="loading-logo"></div>
+    <div class="loading-text">Exam Coach</div>
+    <div class="loading-subtitle">Preparing your personalized learning experience...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Flutter App Container -->
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('flutter-first-frame', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js?v=1');
+      });
+    }
+
+    // Hide loading screen when Flutter is ready
+    window.addEventListener('flutter-first-frame', function () {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        loading.classList.add('loaded');
+      }
+    });
+
+    // Error handling
+    window.addEventListener('error', function(e) {
+      console.error('Application error:', e.error);
+      const loading = document.getElementById('loading');
+      if (loading && !loading.classList.contains('loaded')) {
+        loading.innerHTML = `
+          <div class="loading-logo" style="background: rgba(244, 67, 54, 0.2);">❌</div>
+          <div class="loading-text" style="color: #f44336;">Failed to Load</div>
+          <div class="loading-subtitle">Please refresh the page to try again</div>
+          <button onclick="location.reload()" style="
+            background: white;
+            color: #f44336;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+          ">Refresh Page</button>
+        `;
+      }
+    });
+  </script>
+
+  <!-- Flutter Engine -->
+  <script src="flutter.js" defer></script>
+  <script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: '1',
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine({
+            renderer: "canvaskit",
+          }).then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
