@@ -115,16 +115,7 @@ class ExamCoachApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Exam Coach App',
         
-        // Localization support
-        localizationsDelegates: const [
-          DefaultMaterialLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-          DefaultCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en', 'US'), // English
-          Locale('es', 'ES'), // Spanish (for future expansion)
-        ],
+
         
         // Security: Disable debug banner in production
         debugShowCheckedModeBanner: kDebugMode,

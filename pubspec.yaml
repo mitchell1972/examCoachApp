@@ -5,59 +5,30 @@ publish_to: 'none' # Prevent accidental publishing
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
-  flutter: ">=3.13.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  
-  # UI Dependencies - pinned for security
-  cupertino_icons: 1.0.6
-  
-  # Security and Logging
-  logger: 2.0.2+1
-  flutter_secure_storage: 9.0.0
-  
-  # State Management (for future use)
-  provider: 6.1.1
-  
-  # Network Security (for future API calls)
-  dio: 5.3.4
-  dio_certificate_pinning: 6.0.0
+  cupertino_icons: ^1.0.2
+  provider: ^6.0.0
+  logger: ^2.0.0
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
-  # Testing Framework - pinned versions for consistency
-  flutter_gherkin: 3.0.0-rc.18
+  flutter_lints: ^2.0.0
+  flutter_gherkin: ^3.0.0
   flutter_driver:
     sdk: flutter
-  test: 1.24.9
-  mockito: 5.4.4
-  build_runner: 2.4.7
-  
-  # Code Quality
-  flutter_lints: 3.0.1
-  very_good_analysis: 5.1.0
-  
-  # Security Analysis
-  analyzer: 6.2.0
+  test: any
 
 flutter:
   uses-material-design: true
-  generate: true # Enable localization generation
   
   # Assets (secure asset handling)
-  assets:
-    - assets/images/
-    - assets/icons/
-  
-  # Fonts (if needed in future)
-  # fonts:
-  #   - family: Roboto
-  #     fonts:
-  #       - asset: assets/fonts/Roboto-Regular.ttf 
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/ 
