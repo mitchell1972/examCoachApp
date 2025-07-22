@@ -1,5 +1,6 @@
 class UserModel {
   String? phoneNumber;
+  String? verificationId;
   String? otpCode;
   String? examType;
   String? subject;
@@ -8,6 +9,7 @@ class UserModel {
 
   UserModel({
     this.phoneNumber,
+    this.verificationId,
     this.otpCode,
     this.examType,
     this.subject,
@@ -30,6 +32,7 @@ class UserModel {
   Map<String, dynamic> toJson() {
     return {
       'phoneNumber': phoneNumber,
+      'verificationId': verificationId,
       'otpCode': otpCode,
       'examType': examType,
       'subject': subject,
@@ -41,6 +44,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       phoneNumber: json['phoneNumber'],
+      verificationId: json['verificationId'],
       otpCode: json['otpCode'],
       examType: json['examType'],
       subject: json['subject'],

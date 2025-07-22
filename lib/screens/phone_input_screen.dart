@@ -68,7 +68,10 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       if (result.isSuccess) {
         // Create user model with phone number and verification ID
         final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-        final userModel = UserModel(phoneNumber: cleanPhoneNumber);
+        final userModel = UserModel(
+          phoneNumber: cleanPhoneNumber, 
+          verificationId: result.verificationId,
+        );
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(

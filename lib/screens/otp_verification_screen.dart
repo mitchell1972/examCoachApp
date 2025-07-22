@@ -77,7 +77,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       _logger.i('Attempting to verify OTP code');
 
       // Use Firebase Authentication Service to verify real OTP
-      final result = await _authService.verifyOTP(_currentOTP);
+      final result = await _authService.verifyOTP(widget.userModel.verificationId!, _currentOTP);
 
       if (!mounted) return;
 

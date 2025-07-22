@@ -16,25 +16,16 @@ dependencies:
   logger: ^2.0.0
   flutter_secure_storage: ^9.0.0
   
-  # Firebase Authentication - Updated to latest compatible versions
-  firebase_core: ^3.15.2
-  firebase_auth: ^5.7.0
-  
   # HTTP requests for additional API calls if needed
   http: ^1.1.0
   
   # Connectivity checking
-  connectivity_plus: ^6.1.4
+  connectivity_plus: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-
-# CRITICAL: Force compatible versions to fix handleThenable errors and web conflicts
-dependency_overrides:
-  firebase_auth_web: ^5.15.3
-  web: ^1.0.0  # Force newer web version to match firebase_auth_web requirements
 
 flutter:
   uses-material-design: true
