@@ -6,14 +6,18 @@ import 'package:flutter/foundation.dart'
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
+/// IMPORTANT: Replace the placeholder values below with your actual Firebase project configuration.
+/// To get these values:
+/// 1. Go to https://console.firebase.google.com
+/// 2. Select your project
+/// 3. Click the gear icon (settings) → Project settings
+/// 4. Scroll to 'Your apps' section
+/// 5. Add a web app if not already added
+/// 6. Copy the config object (const firebaseConfig = { ... })
+/// 7. Paste the values here for 'web'
+/// 8. For Android/iOS: Add apps and copy their configs too
+///
+/// After updating, commit and push to enable real SMS in deployed app!
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -44,13 +48,13 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'your-web-api-key-here',
-    appId: 'your-web-app-id-here',
-    messagingSenderId: 'your-sender-id-here',
-    projectId: 'your-project-id-here',
-    authDomain: 'your-project-id.firebaseapp.com',
-    storageBucket: 'your-project-id.appspot.com',
-    measurementId: 'your-measurement-id-here',
+    apiKey: 'your-web-api-key-here',  // From firebaseConfig.apiKey
+    appId: 'your-web-app-id-here',    // From firebaseConfig.appId
+    messagingSenderId: 'your-sender-id-here',  // From firebaseConfig.messagingSenderId
+    projectId: 'your-project-id-here',  // From firebaseConfig.projectId
+    authDomain: 'your-project-id.firebaseapp.com',  // From firebaseConfig.authDomain
+    storageBucket: 'your-project-id.appspot.com',  // From firebaseConfig.storageBucket
+    measurementId: 'your-measurement-id-here',  // From firebaseConfig.measurementId
   );
 
   static const FirebaseOptions android = FirebaseOptions(
