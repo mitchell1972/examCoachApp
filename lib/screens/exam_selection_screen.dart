@@ -135,7 +135,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                   'Select the examination you\'re preparing for',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withOpacity(0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -163,12 +163,12 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(16),
                                 color: isSelected 
-                                    ? Colors.white.withValues(alpha: 0.2)
-                                    : Colors.white.withValues(alpha: 0.1),
+                                    ? Colors.white.withOpacity(0.2)
+                                    : Colors.white.withOpacity(0.1),
                                 border: Border.all(
                                   color: isSelected 
                                       ? Colors.white
-                                      : Colors.white.withValues(alpha: 0.3),
+                                      : Colors.white.withOpacity(0.3),
                                   width: isSelected ? 3 : 1,
                                 ),
                               ),
@@ -178,7 +178,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                                     width: 60,
                                     height: 60,
                                     decoration: BoxDecoration(
-                                      color: exam['color'].withValues(alpha: 0.2),
+                                      color: exam['color'].withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
@@ -206,7 +206,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                                           exam['fullName'],
                                           style: TextStyle(
                                             fontSize: 14,
-                                            color: Colors.white.withValues(alpha: 0.9),
+                                            color: Colors.white.withOpacity(0.9),
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -215,7 +215,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                                           exam['description'],
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: Colors.white.withValues(alpha: 0.7),
+                                            color: Colors.white.withOpacity(0.7),
                                           ),
                                         ),
                                       ],
@@ -240,7 +240,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                                   else
                                     Icon(
                                       Icons.arrow_forward_ios,
-                                      color: Colors.white.withValues(alpha: 0.7),
+                                      color: Colors.white.withOpacity(0.7),
                                       size: 20,
                                     ),
                                 ],

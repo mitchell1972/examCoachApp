@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-/// Pure Demo Firebase Authentication Service
-/// Simulates phone verification for demo purposes without Firebase
-class FirebaseAuthService {
-  static final FirebaseAuthService _instance = FirebaseAuthService._internal();
-  factory FirebaseAuthService() => _instance;
-  FirebaseAuthService._internal();
+/// Demo Authentication Service
+/// Simulates phone verification for demo purposes only
+class DemoAuthService {
+  static final DemoAuthService _instance = DemoAuthService._internal();
+  factory DemoAuthService() => _instance;
+  DemoAuthService._internal();
 
   final Logger _logger = Logger();
   final Connectivity _connectivity = Connectivity();
@@ -23,12 +23,12 @@ class FirebaseAuthService {
   /// Initialize the demo service (always succeeds)
   Future<void> initialize() async {
     try {
-      _logger.i('🎭 Demo Firebase Auth Service: Initializing...');
+      _logger.i('🎭 Demo Auth Service: Initializing...');
       
       // Simulate initialization delay
       await Future.delayed(const Duration(milliseconds: 500));
        
-      _logger.i('✅ Demo Firebase Auth Service: Initialized successfully');
+      _logger.i('✅ Demo Auth Service: Initialized successfully');
     } catch (error, stackTrace) {
       _logger.e('❌ Demo service initialization failed', error: error, stackTrace: stackTrace);
       // In demo mode, we always continue even if there are errors
@@ -142,7 +142,6 @@ class FirebaseAuthService {
           message: 'Invalid verification code. Please try again.',
         );
       }
-
     } catch (error, stackTrace) {
       _logger.e('❌ Demo OTP verification failed', error: error, stackTrace: stackTrace);
       return PhoneVerificationResult.error(
@@ -169,7 +168,7 @@ class FirebaseAuthService {
   /// Basic phone number validation
   bool _isValidPhoneNumber(String phoneNumber) {
     // Remove all non-digit characters except +
-    final cleaned = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    final cleaned = phoneNumber.replaceAll(RegExp(r'[^\\d+]'), '');
     
     // Check if it starts with + and has at least 10 digits
     return cleaned.startsWith('+') && cleaned.length >= 11 && cleaned.length <= 15;
@@ -182,14 +181,14 @@ class FirebaseAuthService {
   }
 }
 
-/// Demo User Credential (replaces Firebase UserCredential)
+/// Demo User Credential (replaces any auth UserCredential)
 class DemoUserCredential {
   final DemoUser user;
   
   DemoUserCredential({required this.user});
 }
 
-/// Demo User (replaces Firebase User)
+/// Demo User (replaces any auth User)
 class DemoUser {
   final String uid;
   final String? phoneNumber;

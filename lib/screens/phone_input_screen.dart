@@ -14,7 +14,7 @@ class PhoneInputScreen extends StatefulWidget {
 class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final FirebaseAuthService _authService = FirebaseAuthService();
+  final DemoAuthService _authService = DemoAuthService();
   final Logger _logger = Logger();
   bool _isLoading = false;
 
@@ -179,7 +179,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     'Enter your phone number to get started',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: Colors.white.withOpacity(0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -189,10 +189,10 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Colors.white.withOpacity(0.3),
                         width: 1,
                       ),
                     ),

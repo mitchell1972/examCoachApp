@@ -92,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white.withValues(alpha: 0.95),
+            color: Colors.white.withOpacity(0.95),
           ),
           textAlign: TextAlign.center,
         ),
@@ -101,14 +101,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           'Phone: ${widget.userModel.phoneNumber}',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
         ),
         Text(
           'Exam: ${widget.userModel.examType}',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
         ),
       ],
@@ -119,10 +119,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
+        color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
+          color: Colors.white.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -132,7 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.2),
+              color: Colors.orange.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
@@ -160,7 +160,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   'Time remaining: ${widget.userModel.trialTimeRemaining}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withOpacity(0.9),
                   ),
                 ),
               ],
@@ -191,10 +191,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
+          color: Colors.white.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -231,7 +231,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
         ),
         Text(
@@ -303,10 +303,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: Colors.white.withValues(alpha: 0.3),
+              color: Colors.white.withOpacity(0.3),
               width: 1,
             ),
           ),

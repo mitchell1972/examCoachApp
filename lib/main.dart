@@ -10,12 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   try {
-    // Initialize Firebase Authentication
-    await FirebaseAuthService().initialize();
+    // Initialize Demo Authentication
+    await DemoAuthService().initialize();
     appLogger.i('App initialization completed successfully');
   } catch (error, stackTrace) {
-    appLogger.e('Failed to initialize Firebase', error: error, stackTrace: stackTrace);
-    // Continue with app launch even if Firebase fails (graceful degradation)
+    appLogger.e('Failed to initialize Demo Auth', error: error, stackTrace: stackTrace);
+    // Continue with app launch even if demo auth fails (graceful degradation)
   }
   
   runApp(const ExamCoachApp());
