@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../services/firebase_auth_service.dart';
@@ -14,7 +15,7 @@ class PhoneInputScreen extends StatefulWidget {
 class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final DemoAuthService _authService = DemoAuthService();
+  final AuthService _authService = AuthService();
   final Logger _logger = Logger();
   bool _isLoading = false;
 
@@ -185,19 +186,27 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   ),
                   const SizedBox(height: 12),
                   
-                  // Demo Mode Notice
+                  // Environment Notice
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
+                      color: kReleaseMode 
+                        ? Colors.green.withOpacity(0.2)
+                        : Colors.orange.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                      border: Border.all(color: kReleaseMode 
+                        ? Colors.green.withOpacity(0.5)
+                        : Colors.orange.withOpacity(0.5)),
                     ),
                     child: Text(
-                      '🎭 DEMO MODE\nNo real SMS will be sent\nUse code: 123456',
+                      kReleaseMode 
+                        ? '🔥 PRODUCTION MODE\nReal SMS will be sent'
+                        : '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.orange.shade100,
+                        color: kReleaseMode 
+                          ? Colors.green.shade100
+                          : Colors.orange.shade100,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,

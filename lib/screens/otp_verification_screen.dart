@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
@@ -25,7 +26,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     (index) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  final DemoAuthService _authService = DemoAuthService();
+  final AuthService _authService = AuthService();
   final Logger _logger = Logger();
   bool _isLoading = false;
   String _currentOTP = '';
@@ -282,19 +283,27 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 ),
                 const SizedBox(height: 16),
                 
-                // Demo Mode Notice
+                // Environment Notice
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
+                    color: kReleaseMode 
+                      ? Colors.blue.withOpacity(0.2)
+                      : Colors.green.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.withOpacity(0.5)),
+                    border: Border.all(color: kReleaseMode 
+                      ? Colors.blue.withOpacity(0.5)
+                      : Colors.green.withOpacity(0.5)),
                   ),
                   child: Text(
-                    '🎭 DEMO CODE: 123456\n(No real SMS sent)',
+                    kReleaseMode 
+                      ? '📱 Enter the OTP code sent to your phone'
+                      : '🎭 DEMO CODE: 123456\n(No real SMS sent)',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.green.shade100,
+                      color: kReleaseMode 
+                        ? Colors.blue.shade100
+                        : Colors.green.shade100,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,

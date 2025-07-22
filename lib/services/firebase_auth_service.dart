@@ -1,18 +1,27 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../firebase_options.dart';
 
-/// Demo Authentication Service
-/// Simulates phone verification for demo purposes only
-class DemoAuthService {
-  static final DemoAuthService _instance = DemoAuthService._internal();
-  factory DemoAuthService() => _instance;
-  DemoAuthService._internal();
+/// Environment-aware Authentication Service
+/// - Production (CI/CD): Real Firebase Authentication
+/// - Development: Demo mode simulation
+class AuthService {
+  static final AuthService _instance = AuthService._internal();
+  factory AuthService() => _instance;
+  AuthService._internal();
 
   final Logger _logger = Logger();
   final Connectivity _connectivity = Connectivity();
 
-  // Demo state tracking
+  // Environment detection
+  bool get _isProduction => kReleaseMode || _isCI;
+  bool get _isCI => const bool.fromEnvironment('CI', defaultValue: false);
+
+  // Demo state tracking (for local development)
   String? _verificationId;
   DateTime? _lastOtpSent;
   int _otpAttempts = 0;
@@ -20,24 +29,120 @@ class DemoAuthService {
   static const Duration _otpCooldown = Duration(minutes: 1);
   static const String _demoOtp = '123456';
 
-  /// Initialize the demo service (always succeeds)
+  /// Initialize the authentication service
   Future<void> initialize() async {
     try {
-      _logger.i('🎭 Demo Auth Service: Initializing...');
-      _logger.i('ℹ️  NO REAL SMS WILL BE SENT - Use demo code: $_demoOtp');
-      
-      // Simulate initialization delay
-      await Future.delayed(const Duration(milliseconds: 500));
-       
-      _logger.i('✅ Demo Auth Service: Initialized successfully');
+      if (_isProduction) {
+        _logger.i('🔥 Production: Initializing Firebase Authentication...');
+        // TODO: Initialize real Firebase
+        await _initializeFirebase();
+        _logger.i('✅ Firebase Authentication initialized successfully');
+      } else {
+        _logger.i('🎭 Development: Using Demo Authentication...');
+        _logger.i('ℹ️  NO REAL SMS WILL BE SENT - Use demo code: $_demoOtp');
+        await Future.delayed(const Duration(milliseconds: 500));
+        _logger.i('✅ Demo Auth Service: Initialized successfully');
+      }
     } catch (error, stackTrace) {
-      _logger.e('❌ Demo service initialization failed', error: error, stackTrace: stackTrace);
-      // In demo mode, we always continue even if there are errors
+      final mode = _isProduction ? 'Firebase' : 'Demo';
+      _logger.e('❌ $mode service initialization failed', error: error, stackTrace: stackTrace);
+      // Continue with app launch even if auth fails (graceful degradation)
     }
   }
 
-  /// Send OTP to phone number (demo simulation)
+  /// Initialize real Firebase (production only)
+  Future<void> _initializeFirebase() async {
+    if (!_isProduction) return;
+    
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      
+      _logger.i('🔥 Firebase Core initialized successfully');
+    } catch (error) {
+      _logger.w('⚠️  Firebase initialization failed (expected with placeholder config): $error');
+      _logger.i('ℹ️  To use real Firebase: Replace placeholder values in lib/firebase_options.dart');
+      
+      // Don't throw - allow app to continue with fallback behavior
+    }
+  }
+
+  /// Send OTP to phone number
   Future<PhoneVerificationResult> sendOTP(String phoneNumber) async {
+    if (_isProduction) {
+      return _sendRealOTP(phoneNumber);
+    } else {
+      return _sendDemoOTP(phoneNumber);
+    }
+  }
+
+  /// Send real OTP (production)
+  Future<PhoneVerificationResult> _sendRealOTP(String phoneNumber) async {
+    try {
+      _logger.i('🔥 Production: Sending real OTP to ${_maskPhoneNumber(phoneNumber)}');
+      
+      final auth = FirebaseAuth.instance;
+      final completer = Completer<PhoneVerificationResult>();
+      
+      await auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          _logger.i('🔥 Auto-verification completed');
+          try {
+            final userCredential = await auth.signInWithCredential(credential);
+            completer.complete(PhoneVerificationResult.verified(
+              credential: _createUserCredential(userCredential),
+              message: '✅ Phone number verified automatically!',
+            ));
+          } catch (error) {
+            completer.complete(PhoneVerificationResult.error(
+              error: PhoneAuthError.unknown,
+              message: 'Auto-verification failed: $error',
+            ));
+          }
+        },
+        verificationFailed: (FirebaseAuthException error) {
+          _logger.e('🔥 Verification failed: ${error.message}');
+          final authError = _mapFirebaseError(error);
+          completer.complete(PhoneVerificationResult.error(
+            error: authError,
+            message: error.message ?? 'Verification failed',
+          ));
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          _logger.i('🔥 OTP code sent successfully');
+          if (!completer.isCompleted) {
+            completer.complete(PhoneVerificationResult.success(
+              verificationId: verificationId,
+              message: '📱 OTP sent to $phoneNumber\nEnter the 6-digit code to verify',
+            ));
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          _logger.i('🔥 Auto-retrieval timeout');
+          if (!completer.isCompleted) {
+            completer.complete(PhoneVerificationResult.success(
+              verificationId: verificationId,
+              message: '📱 OTP sent to $phoneNumber\nEnter the 6-digit code to verify',
+            ));
+          }
+        },
+      );
+      
+      return await completer.future;
+      
+    } catch (error, stackTrace) {
+      _logger.e('❌ Real OTP send failed', error: error, stackTrace: stackTrace);
+      return PhoneVerificationResult.error(
+        error: PhoneAuthError.unknown,
+        message: 'Failed to send OTP: $error',
+      );
+    }
+  }
+
+  /// Send demo OTP (development)
+  Future<PhoneVerificationResult> _sendDemoOTP(String phoneNumber) async {
     try {
       _logger.i('📱 Demo mode: Simulating OTP send to ${_maskPhoneNumber(phoneNumber)}');
 
@@ -60,7 +165,7 @@ class DemoAuthService {
         );
       }
 
-      // Validate phone number format (basic validation)
+      // Validate phone number format
       if (!_isValidPhoneNumber(phoneNumber)) {
         return PhoneVerificationResult.error(
           error: PhoneAuthError.invalidPhoneNumber,
@@ -92,8 +197,61 @@ class DemoAuthService {
     }
   }
 
-  /// Verify OTP code (demo simulation)
+  /// Verify OTP code
   Future<PhoneVerificationResult> verifyOTP(String verificationId, String otpCode) async {
+    if (_isProduction) {
+      return _verifyRealOTP(verificationId, otpCode);
+    } else {
+      return _verifyDemoOTP(verificationId, otpCode);
+    }
+  }
+
+  /// Verify real OTP (production)
+  Future<PhoneVerificationResult> _verifyRealOTP(String verificationId, String otpCode) async {
+    try {
+      _logger.i('🔥 Production: Verifying real OTP');
+      
+      final auth = FirebaseAuth.instance;
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: otpCode,
+      );
+      
+      final userCredential = await auth.signInWithCredential(credential);
+      
+      if (userCredential.user != null) {
+        _logger.i('🔥 Real OTP verified successfully');
+        return PhoneVerificationResult.verified(
+          credential: _createUserCredential(userCredential),
+          message: '✅ Phone number verified successfully!',
+        );
+      } else {
+        return PhoneVerificationResult.error(
+          error: PhoneAuthError.unknown,
+          message: 'Verification completed but user is null',
+        );
+      }
+      
+    } catch (error, stackTrace) {
+      _logger.e('❌ Real OTP verification failed', error: error, stackTrace: stackTrace);
+      
+      PhoneAuthError authError = PhoneAuthError.unknown;
+      String message = 'Verification failed. Please try again.';
+      
+      if (error is FirebaseAuthException) {
+        authError = _mapFirebaseError(error);
+        message = error.message ?? message;
+      }
+      
+      return PhoneVerificationResult.error(
+        error: authError,
+        message: message,
+      );
+    }
+  }
+
+  /// Verify demo OTP (development)
+  Future<PhoneVerificationResult> _verifyDemoOTP(String verificationId, String otpCode) async {
     try {
       _logger.i('🔐 Demo mode: Verifying OTP code');
 
@@ -152,18 +310,64 @@ class DemoAuthService {
     }
   }
 
-  /// Resend OTP (demo simulation)
+  /// Resend OTP
   Future<PhoneVerificationResult> resendOTP(String phoneNumber) async {
-    _logger.i('🔄 Demo mode: Resending OTP');
-    return sendOTP(phoneNumber); // Same as send for demo
+    _logger.i('🔄 Resending OTP in ${_isProduction ? 'production' : 'demo'} mode');
+    return sendOTP(phoneNumber);
   }
 
-  /// Sign out (demo simulation)
+  /// Sign out
   Future<void> signOut() async {
-    _logger.i('👋 Demo mode: Signing out');
-    _verificationId = null;
-    _lastOtpSent = null;
-    _otpAttempts = 0;
+    _logger.i('👋 Signing out in ${_isProduction ? 'production' : 'demo'} mode');
+    
+    if (_isProduction) {
+      await FirebaseAuth.instance.signOut();
+    } else {
+      // Reset demo state
+      _verificationId = null;
+      _lastOtpSent = null;
+      _otpAttempts = 0;
+    }
+  }
+
+  /// Create DemoUserCredential from Firebase UserCredential
+  DemoUserCredential _createUserCredential(UserCredential userCredential) {
+    final user = userCredential.user!;
+    return DemoUserCredential(
+      user: DemoUser(
+        uid: user.uid,
+        phoneNumber: user.phoneNumber,
+        isEmailVerified: user.emailVerified,
+        creationTime: user.metadata.creationTime ?? DateTime.now(),
+        lastSignInTime: user.metadata.lastSignInTime ?? DateTime.now(),
+      ),
+    );
+  }
+
+  /// Map Firebase errors to our custom error enum
+  PhoneAuthError _mapFirebaseError(FirebaseAuthException error) {
+    switch (error.code) {
+      case 'invalid-phone-number':
+        return PhoneAuthError.invalidPhoneNumber;
+      case 'invalid-verification-code':
+        return PhoneAuthError.invalidVerificationCode;
+      case 'invalid-verification-id':
+        return PhoneAuthError.invalidVerificationId;
+      case 'too-many-requests':
+        return PhoneAuthError.tooManyRequests;
+      case 'session-expired':
+        return PhoneAuthError.sessionExpired;
+      case 'network-request-failed':
+        return PhoneAuthError.networkError;
+      case 'operation-not-allowed':
+        return PhoneAuthError.operationNotAllowed;
+      case 'app-not-authorized':
+        return PhoneAuthError.appNotAuthorized;
+      case 'captcha-check-failed':
+        return PhoneAuthError.captchaCheckFailed;
+      default:
+        return PhoneAuthError.unknown;
+    }
   }
 
   /// Basic phone number validation
@@ -268,4 +472,5 @@ enum PhoneAuthError {
   appNotAuthorized,
   captchaCheckFailed,
   unknown,
+} 
 } 

@@ -10,12 +10,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   try {
-    // Initialize Demo Authentication
-    await DemoAuthService().initialize();
+    // Initialize Authentication (environment-aware)
+    await AuthService().initialize();
     appLogger.i('App initialization completed successfully');
   } catch (error, stackTrace) {
-    appLogger.e('Failed to initialize Demo Auth', error: error, stackTrace: stackTrace);
-    // Continue with app launch even if demo auth fails (graceful degradation)
+    appLogger.e('Failed to initialize Auth Service', error: error, stackTrace: stackTrace);
+    // Continue with app launch even if auth fails (graceful degradation)
   }
   
   runApp(const ExamCoachApp());

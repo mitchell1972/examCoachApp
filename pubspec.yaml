@@ -21,6 +21,10 @@ dependencies:
   
   # Connectivity checking
   connectivity_plus: ^5.0.0
+  
+  # Firebase for production authentication
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
 
 dev_dependencies:
   flutter_test:

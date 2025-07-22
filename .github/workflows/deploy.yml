@@ -50,7 +50,7 @@ jobs:
       
     - name: Build web app
       run: |
-        flutter build web --release --web-renderer canvaskit --base-href /examCoachApp/
+        flutter build web --release --web-renderer canvaskit --base-href /examCoachApp/ --dart-define=CI=true
         
     - name: Setup Pages
       uses: actions/configure-pages@v5
