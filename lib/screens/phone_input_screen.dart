@@ -92,13 +92,13 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         // Handle different types of errors with appropriate user messages
         String errorMessage = 'Failed to send OTP. Please try again.';
         
-        if (result.errorType != null) {
-          switch (result.errorType!) {
+        if (result.error != null) {
+          switch (result.error!) {
             case PhoneAuthError.invalidPhoneNumber:
               errorMessage = 'Invalid phone number format. Please enter a valid number with country code.';
               break;
             case PhoneAuthError.tooManyRequests:
-              errorMessage = result.errorMessage ?? 'Too many requests. Please wait before trying again.';
+              errorMessage = result.message;
               break;
             case PhoneAuthError.networkError:
               errorMessage = 'Network error. Please check your internet connection.';
@@ -107,18 +107,18 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
               errorMessage = 'Phone authentication is temporarily unavailable. Please try again later.';
               break;
             default:
-              errorMessage = result.errorMessage ?? 'An unexpected error occurred.';
+              errorMessage = result.message;
           }
         }
 
-        _logger.w('OTP send failed: ${result.errorMessage}');
+        _logger.w('OTP send failed: ${result.message}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('❌ $errorMessage'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
-            action: result.errorType == PhoneAuthError.networkError
+            action: result.error == PhoneAuthError.networkError
                 ? SnackBarAction(
                     label: 'Retry',
                     textColor: Colors.white,

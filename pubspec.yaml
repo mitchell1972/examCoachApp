@@ -31,6 +31,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
+# CRITICAL: Force compatible versions to fix handleThenable errors
+dependency_overrides:
+  firebase_auth_web: ^5.15.3
+
 flutter:
   uses-material-design: true
   

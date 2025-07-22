@@ -85,7 +85,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         // Store the verified OTP and Firebase user
         widget.userModel.otpCode = _currentOTP;
         
-        _logger.i('OTP verified successfully for user: ${result.user?.uid}');
+        _logger.i('OTP verified successfully for user: ${result.credential?.user?.uid}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -103,7 +103,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         );
       } else {
         // Handle verification failure with specific error messages
-        String errorMessage = result.errorMessage ?? 'Invalid OTP. Please try again.';
+        String errorMessage = result.message;
         
         _logger.w('OTP verification failed: $errorMessage');
 
@@ -185,9 +185,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         _focusNodes[0].requestFocus();
       } else {
         // Handle resend failure
-        String errorMessage = result.errorMessage ?? 'Failed to resend OTP. Please try again.';
+        String errorMessage = result.message;
         
-        if (result.errorType == PhoneAuthError.tooManyRequests) {
+        if (result.error == PhoneAuthError.tooManyRequests) {
           errorMessage = 'Too many requests. Please wait before requesting another code.';
         }
 
