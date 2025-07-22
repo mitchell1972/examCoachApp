@@ -288,21 +288,21 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: kReleaseMode 
-                      ? Colors.blue.withOpacity(0.2)
+                      ? Colors.orange.withOpacity(0.2)
                       : Colors.green.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: kReleaseMode 
-                      ? Colors.blue.withOpacity(0.5)
+                      ? Colors.orange.withOpacity(0.5)
                       : Colors.green.withOpacity(0.5)),
                   ),
                   child: Text(
                     kReleaseMode 
-                      ? '📱 Enter the OTP code sent to your phone'
+                      ? '📱 OTP sending may fail\n⚠️ Firebase config incomplete'
                       : '🎭 DEMO CODE: 123456\n(No real SMS sent)',
                     style: TextStyle(
                       fontSize: 16,
                       color: kReleaseMode 
-                        ? Colors.blue.shade100
+                        ? Colors.orange.shade100
                         : Colors.green.shade100,
                       fontWeight: FontWeight.bold,
                     ),

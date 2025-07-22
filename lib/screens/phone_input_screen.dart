@@ -112,12 +112,26 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     } catch (error, stackTrace) {
       _logger.e('Unexpected error during OTP send', error: error, stackTrace: stackTrace);
       
+      // Provide more specific error messages for common Firebase issues
+      String errorMessage = 'An unexpected error occurred. Please try again.';
+      
+      if (error.toString().contains('firebase') || 
+          error.toString().contains('Firebase') ||
+          error.toString().contains('your-web-api-key-here')) {
+        errorMessage = '🔥 Firebase configuration incomplete.\n'
+                      'In production: Real Firebase config needed.\n'
+                      'For demo: Use local development mode.';
+      } else if (error.toString().contains('network') || 
+                 error.toString().contains('connection')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      }
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ An unexpected error occurred. Please try again.'),
+          SnackBar(
+            content: Text('❌ $errorMessage'),
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 6),
           ),
         );
       }
@@ -191,21 +205,21 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: kReleaseMode 
-                        ? Colors.green.withOpacity(0.2)
+                        ? Colors.orange.withOpacity(0.2)
                         : Colors.orange.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: kReleaseMode 
-                        ? Colors.green.withOpacity(0.5)
+                        ? Colors.orange.withOpacity(0.5)
                         : Colors.orange.withOpacity(0.5)),
                     ),
                     child: Text(
                       kReleaseMode 
-                        ? '🔥 PRODUCTION MODE\nReal SMS will be sent'
+                        ? '🔥 PRODUCTION MODE\n⚠️ Firebase config: placeholder values\nReal SMS requires valid Firebase setup'
                         : '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
                       style: TextStyle(
                         fontSize: 14,
                         color: kReleaseMode 
-                          ? Colors.green.shade100
+                          ? Colors.orange.shade100
                           : Colors.orange.shade100,
                         fontWeight: FontWeight.w500,
                       ),
