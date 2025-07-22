@@ -196,6 +196,38 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                         width: 1,
                       ),
                     ),
+                    child: TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: '+1 234 567 8900',
+                        hintStyle: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your phone number';
+                        }
+                        if (!value.startsWith('+')) {
+                          return 'Please include country code (e.g., +44)';
+                        }
+                        // Remove all non-digit chars except + for length check
+                        final cleaned = value.replaceAll(RegExp(r'[^\d+]'), '');
+                        if (cleaned.length < 11 || cleaned.length > 15) {
+                          return 'Please enter a valid phone number (10-14 digits)';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(height: 32),
                   

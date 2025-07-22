@@ -168,7 +168,7 @@ class DemoAuthService {
   /// Basic phone number validation
   bool _isValidPhoneNumber(String phoneNumber) {
     // Remove all non-digit characters except +
-    final cleaned = phoneNumber.replaceAll(RegExp(r'[^\\d+]'), '');
+    final cleaned = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
     
     // Check if it starts with + and has at least 10 digits
     return cleaned.startsWith('+') && cleaned.length >= 11 && cleaned.length <= 15;
