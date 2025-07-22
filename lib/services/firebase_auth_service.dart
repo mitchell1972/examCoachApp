@@ -473,4 +473,3 @@ enum PhoneAuthError {
   captchaCheckFailed,
   unknown,
 } 
-} 
