@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -15,14 +14,11 @@ class FirebaseAuthService {
 
   // Demo state tracking
   String? _verificationId;
-  int? _resendToken;
   DateTime? _lastOtpSent;
   int _otpAttempts = 0;
   static const int _maxOtpAttempts = 3;
   static const Duration _otpCooldown = Duration(minutes: 1);
   static const String _demoOtp = '123456';
-
-  bool _isInitialized = false;
 
   /// Initialize the demo service (always succeeds)
   Future<void> initialize() async {
@@ -31,13 +27,11 @@ class FirebaseAuthService {
       
       // Simulate initialization delay
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      _isInitialized = true;
+       
       _logger.i('✅ Demo Firebase Auth Service: Initialized successfully');
     } catch (error, stackTrace) {
       _logger.e('❌ Demo service initialization failed', error: error, stackTrace: stackTrace);
       // In demo mode, we always continue even if there are errors
-      _isInitialized = true;
     }
   }
 
@@ -78,7 +72,6 @@ class FirebaseAuthService {
 
       // Generate demo verification ID
       _verificationId = 'demo-verification-${DateTime.now().millisecondsSinceEpoch}';
-      _resendToken = DateTime.now().millisecondsSinceEpoch;
       _lastOtpSent = DateTime.now();
       _otpAttempts = 0;
 
@@ -169,7 +162,6 @@ class FirebaseAuthService {
   Future<void> signOut() async {
     _logger.i('👋 Demo mode: Signing out');
     _verificationId = null;
-    _resendToken = null;
     _lastOtpSent = null;
     _otpAttempts = 0;
   }

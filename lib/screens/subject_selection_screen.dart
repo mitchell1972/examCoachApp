@@ -160,7 +160,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                   'Select your primary subject for ${widget.userModel.examType} preparation',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -192,12 +192,12 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               color: isSelected 
-                                  ? Colors.white.withOpacity(0.2)
-                                  : Colors.white.withOpacity(0.1),
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : Colors.white.withValues(alpha: 0.1),
                               border: Border.all(
                                 color: isSelected 
                                     ? Colors.white
-                                    : Colors.white.withOpacity(0.3),
+                                    : Colors.white.withValues(alpha: 0.3),
                                 width: isSelected ? 3 : 1,
                               ),
                             ),
@@ -208,7 +208,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                                   width: 50,
                                   height: 50,
                                   decoration: BoxDecoration(
-                                    color: subject['color'].withOpacity(0.2),
+                                    color: subject['color'].withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Icon(
@@ -234,7 +234,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                                   subject['description'],
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: Colors.white.withValues(alpha: 0.8),
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,

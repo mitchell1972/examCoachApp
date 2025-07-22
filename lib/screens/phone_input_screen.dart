@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../services/firebase_auth_service.dart';
@@ -25,29 +24,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     super.dispose();
   }
 
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your phone number';
-    }
-    
-    // Remove any non-digit characters except + for country code
-    final cleanNumber = value.replaceAll(RegExp(r'[^\d+]'), '');
-    
-    // Check for valid international format
-    if (cleanNumber.startsWith('+')) {
-      // International format: +countrycode + number
-      if (cleanNumber.length < 10 || cleanNumber.length > 16) {
-        return 'Please enter a valid international phone number';
-      }
-    } else {
-      // Local format without country code
-      if (cleanNumber.length < 10 || cleanNumber.length > 15) {
-        return 'Please enter a valid phone number';
-      }
-    }
-    
-    return null;
-  }
+
 
   Future<void> _sendOTP() async {
     if (!_formKey.currentState!.validate()) return;
@@ -199,70 +176,25 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   const SizedBox(height: 12),
                   
                   Text(
-                    'Enter your phone number with country code to receive an OTP',
+                    'Enter your phone number to get started',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
-                  
-                  // Phone Input Field
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    validator: _validatePhoneNumber,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9+\-\s()]')),
-                    ],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Phone Number',
-                      hintText: '+1234567890 or 1234567890',
-                      labelStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                  const SizedBox(height: 32),
+
+                  // Phone number input
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
                       ),
-                      hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.phone,
-                        color: Colors.white,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: Colors.white.withOpacity(0.5),
-                          width: 2,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.white,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Colors.red,
-                          width: 2,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
                     ),
                   ),
                   const SizedBox(height: 32),
