@@ -183,6 +183,26 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 12),
+                  
+                  // Demo Mode Notice
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                    ),
+                    child: Text(
+                      '🎭 DEMO MODE\nNo real SMS will be sent\nUse code: 123456',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.orange.shade100,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   const SizedBox(height: 32),
 
                   // Phone number input

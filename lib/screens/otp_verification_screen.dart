@@ -280,7 +280,27 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                
+                // Demo Mode Notice
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.withOpacity(0.5)),
+                  ),
+                  child: Text(
+                    '🎭 DEMO CODE: 123456\n(No real SMS sent)',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.green.shade100,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 
                 // OTP Input Row
                 Row(

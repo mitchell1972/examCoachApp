@@ -24,6 +24,7 @@ class DemoAuthService {
   Future<void> initialize() async {
     try {
       _logger.i('🎭 Demo Auth Service: Initializing...');
+      _logger.i('ℹ️  NO REAL SMS WILL BE SENT - Use demo code: $_demoOtp');
       
       // Simulate initialization delay
       await Future.delayed(const Duration(milliseconds: 500));
@@ -79,7 +80,7 @@ class DemoAuthService {
 
       return PhoneVerificationResult.success(
         verificationId: _verificationId!,
-        message: '📱 Demo OTP "$_demoOtp" sent to $phoneNumber',
+        message: '🎭 DEMO MODE: No real SMS sent!\n📱 Use demo code: $_demoOtp\n\n(In production, real OTP would be sent to $phoneNumber)',
       );
 
     } catch (error, stackTrace) {
@@ -133,7 +134,7 @@ class DemoAuthService {
 
         return PhoneVerificationResult.verified(
           credential: demoCredential,
-          message: '✅ Phone number verified successfully!',
+          message: '✅ Demo verification successful!\n🎭 In production: Real phone verification completed',
         );
       } else {
         _logger.w('❌ Demo OTP verification failed: incorrect code');
