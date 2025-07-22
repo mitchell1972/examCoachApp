@@ -34,21 +34,32 @@ class FirebaseAuthService {
   /// Initialize Firebase Authentication
   Future<void> initialize() async {
     if (_initialized || _initFailed) return;
+
     try {
-      await Firebase.initializeApp(
-        options: _getFirebaseOptions(),
-      );
-      
+      if (kIsWeb) {
+        final options = _getFirebaseOptions();
+        if (options != null && options.apiKey != 'YOUR_WEB_API_KEY') {
+          await Firebase.initializeApp(options: options);
+        } else {
+          // Config missing – skip initialization but mark as failed gracefully
+          _logger.w('Firebase Web config missing. Skipping Firebase initialization (web).');
+          _initFailed = true;
+          return;
+        }
+      } else {
+        // Mobile/desktop – configuration comes from google-services.json / plist
+        await Firebase.initializeApp();
+      }
+
+      // If we reach here, Firebase initialized successfully
       _auth = FirebaseAuth.instance;
-      
-      // Set language code for SMS
       await _auth.setLanguageCode('en');
-      
-      _logger.i('Firebase Auth initialized successfully');
+
       _initialized = true;
+      _logger.i('Firebase Auth initialized successfully');
     } catch (error, stackTrace) {
       _logger.e('Failed to initialize Firebase Auth', error: error, stackTrace: stackTrace);
-      _initFailed = true;
+      _initFailed = true; // Prevent retry loops
     }
   }
 
