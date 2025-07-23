@@ -85,6 +85,15 @@ class AuthService {
       final auth = FirebaseAuth.instance;
       final completer = Completer<PhoneVerificationResult>();
       
+      RecaptchaVerifier? verifier;
+      if (kIsWeb) {
+        verifier = RecaptchaVerifier(
+          container: 'recaptcha-container',  // Add invisible reCAPTCHA
+          size: RecaptchaVerifierSize.invisible,
+          theme: RecaptchaVerifierTheme.light,
+        );
+      }
+      
       await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -128,6 +137,7 @@ class AuthService {
             ));
           }
         },
+        applicationVerifier: verifier,
       );
       
       return await completer.future;
