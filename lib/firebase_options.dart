@@ -2,22 +2,20 @@
 // ignore_for_file: lines_longer_than_80_chars, avoid_classes_with_only_static_members
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+    show defaultTargetPlatform, kIsWeb, TargetPlatform, kDebugMode;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// IMPORTANT: Replace the placeholder values below with your actual Firebase project configuration.
-/// To get these values:
-/// 1. Go to https://console.firebase.google.com
-/// 2. Select your project
-/// 3. Click the gear icon (settings) → Project settings
-/// 4. Scroll to 'Your apps' section
-/// 5. Add a web app if not already added
-/// 6. Copy the config object (const firebaseConfig = { ... })
-/// 7. Paste the values here for 'web'
-/// 8. For Android/iOS: Add apps and copy their configs too
+/// SECURITY NOTE: Firebase Web API keys are PUBLIC by design and should NOT be hidden.
+/// Real security comes from:
+/// 1. Firebase Security Rules (primary security layer)
+/// 2. Domain restrictions in Firebase Console
+/// 3. API key restrictions in Google Cloud Console
 ///
-/// After updating, commit and push to enable real SMS in deployed app!
+/// PRODUCTION FIREBASE PROJECT: examcoachapp
+/// - Project ID: examcoachapp
+/// - Auth Domain: examcoachapp.firebaseapp.com
+/// - Real SMS/OTP will be sent when running in production mode
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -47,39 +45,43 @@ class DefaultFirebaseOptions {
     }
   }
 
+  /// Web Firebase configuration for examcoachapp project
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'your-web-api-key-here',  // From firebaseConfig.apiKey
-    appId: 'your-web-app-id-here',    // From firebaseConfig.appId
-    messagingSenderId: 'your-sender-id-here',  // From firebaseConfig.messagingSenderId
-    projectId: 'your-project-id-here',  // From firebaseConfig.projectId
-    authDomain: 'your-project-id.firebaseapp.com',  // From firebaseConfig.authDomain
-    storageBucket: 'your-project-id.appspot.com',  // From firebaseConfig.storageBucket
-    measurementId: 'your-measurement-id-here',  // From firebaseConfig.measurementId
+    apiKey: 'AIzaSyBZrX5BY7fMPWFC7rxMZUxKLiFBzi7tP9I',
+    appId: '1:591013189256:web:bb2dc0867996839a40f13d',
+    messagingSenderId: '591013189256',
+    projectId: 'examcoachapp',
+    authDomain: 'examcoachapp.firebaseapp.com',
+    storageBucket: 'examcoachapp.firebasestorage.app',
+    measurementId: 'G-RP4T27J6KB',
   );
 
+  /// Android Firebase configuration (add when needed)
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'your-android-api-key-here',
-    appId: 'your-android-app-id-here',
-    messagingSenderId: 'your-sender-id-here',
-    projectId: 'your-project-id-here',
-    storageBucket: 'your-project-id.appspot.com',
+    apiKey: 'YOUR_ANDROID_API_KEY_HERE',
+    appId: 'YOUR_ANDROID_APP_ID_HERE',
+    messagingSenderId: '591013189256',
+    projectId: 'examcoachapp',
+    storageBucket: 'examcoachapp.firebasestorage.app',
   );
 
+  /// iOS Firebase configuration (add when needed)
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'your-ios-api-key-here',
-    appId: 'your-ios-app-id-here',
-    messagingSenderId: 'your-sender-id-here',
-    projectId: 'your-project-id-here',
-    storageBucket: 'your-project-id.appspot.com',
-    iosBundleId: 'com.example.examCoachApp',
+    apiKey: 'YOUR_IOS_API_KEY_HERE',
+    appId: 'YOUR_IOS_APP_ID_HERE',
+    messagingSenderId: '591013189256',
+    projectId: 'examcoachapp',
+    storageBucket: 'examcoachapp.firebasestorage.app',
+    iosBundleId: 'com.example.examcoachapp',
   );
 
+  /// macOS Firebase configuration (add when needed)
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'your-ios-api-key-here',
-    appId: 'your-ios-app-id-here',
-    messagingSenderId: 'your-sender-id-here',
-    projectId: 'your-project-id-here',
-    storageBucket: 'your-project-id.appspot.com',
-    iosBundleId: 'com.example.examCoachApp',
+    apiKey: 'YOUR_MACOS_API_KEY_HERE',
+    appId: 'YOUR_MACOS_APP_ID_HERE',
+    messagingSenderId: '591013189256',
+    projectId: 'examcoachapp',
+    storageBucket: 'examcoachapp.firebasestorage.app',
+    iosBundleId: 'com.example.examcoachapp',
   );
 } 
