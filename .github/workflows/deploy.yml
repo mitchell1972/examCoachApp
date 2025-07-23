@@ -39,6 +39,9 @@ jobs:
         channel: 'stable'
         cache: true
         
+    - name: Clean Flutter project
+      run: flutter clean
+      
     - name: Enable Flutter Web
       run: flutter config --enable-web
       
