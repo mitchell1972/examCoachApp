@@ -1,0 +1,1 @@
+ /Users/mitchellagoma/Downloads/examCoachApp/build/web/manifest.json:  /Users/mitchellagoma/Downloads/examCoachApp/web/index.html /Users/mitchellagoma/Downloads/examCoachApp/web/manifest.json
