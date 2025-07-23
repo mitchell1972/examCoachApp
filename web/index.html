@@ -35,20 +35,6 @@
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <div id="recaptcha-container"></div>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: '1',
-        }
-      }).then(function(engineInitializer) {
-        return engineInitializer.initializeEngine();
-      }).then(function(appRunner) {
-        return appRunner.runApp();
-      });
-    });
-  </script>
-  <script src="flutter.js" defer></script>
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html> 
