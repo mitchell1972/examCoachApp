@@ -85,15 +85,11 @@ class AuthService {
       final auth = FirebaseAuth.instance;
       final completer = Completer<PhoneVerificationResult>();
       
-      RecaptchaVerifier? verifier;
-      if (kIsWeb) {
-        verifier = RecaptchaVerifier(
-          container: 'recaptcha-container',  // Add invisible reCAPTCHA
-          size: RecaptchaVerifierSize.invisible,
-          theme: RecaptchaVerifierTheme.light,
-        );
+      // RecaptchaVerifier is for web only
+      if (!kIsWeb) {
+        throw UnsupportedError('reCAPTCHA is only supported on web.');
       }
-      
+
       await auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -137,7 +133,10 @@ class AuthService {
             ));
           }
         },
-        applicationVerifier: verifier,
+        timeout: const Duration(seconds: 60),
+        // FIX: The RecaptchaVerifier is now created and managed internally
+        // by the plugin on web. We don't need to create it manually.
+        // The plugin will automatically handle reCAPTCHA.
       );
       
       return await completer.future;
