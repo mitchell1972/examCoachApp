@@ -3,17 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
-import '../services/firebase_auth_service.dart';
+import '../main.dart'; // Import to access global authService
 import 'exam_selection_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final UserModel userModel;
-  final String verificationId;
+  final String? verificationId; // Made optional for Twilio
 
   const OTPVerificationScreen({
     Key? key,
     required this.userModel,
-    required this.verificationId,
+    this.verificationId, // Made optional
   }) : super(key: key);
 
   @override
@@ -26,7 +26,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     (index) => TextEditingController(),
   );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-  final AuthService _authService = AuthService();
   final Logger _logger = Logger();
   bool _isLoading = false;
   String _currentOTP = '';
@@ -77,18 +76,23 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     try {
       _logger.i('Attempting to verify OTP code');
 
-      // Use Firebase Authentication Service to verify real OTP
-      final result = await _authService.verifyOTP(widget.userModel.verificationId!, _currentOTP);
+      // Check if phoneNumber is not null
+      final phoneNumber = widget.userModel.phoneNumber;
+      if (phoneNumber == null) {
+        throw Exception('Phone number is missing');
+      }
+
+      // Use Twilio Authentication Service to verify OTP
+      final verifiedUser = await authService.verifyOTP(phoneNumber, _currentOTP);
 
       if (!mounted) return;
 
-      if (result.isSuccess && result.credential != null) {
-        // Store the verified OTP and Firebase user
+      if (verifiedUser != null) {
+        // Update the user model with verified user data
+        widget.userModel.id = verifiedUser.id;
         widget.userModel.otpCode = _currentOTP;
         
-        // Secure null handling - use safe navigation instead of assertion
-        final userUid = result.credential?.user.uid ?? 'unknown-user';
-        _logger.i('OTP verified successfully for user: $userUid');
+        _logger.i('OTP verified successfully for user: ${verifiedUser.id}');
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -105,24 +109,17 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
           ),
         );
       } else {
-        // Handle verification failure with specific error messages
-        String errorMessage = result.message;
-        
-        _logger.w('OTP verification failed: $errorMessage');
+        // Handle verification failure
+        _logger.w('OTP verification failed: Invalid verification code');
 
         // Clear OTP fields on error
         _clearOTPFields();
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ $errorMessage'),
+          const SnackBar(
+            content: Text('❌ Invalid verification code. Please try again.'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'Resend',
-              textColor: Colors.white,
-              onPressed: () => _resendOTP(),
-            ),
+            duration: Duration(seconds: 4),
           ),
         );
 
@@ -158,6 +155,12 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
     try {
       _logger.i('Attempting to resend OTP');
 
+      // Check if phoneNumber is not null
+      final phoneNumber = widget.userModel.phoneNumber;
+      if (phoneNumber == null) {
+        throw Exception('Phone number is missing');
+      }
+
       // Show loading message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -167,55 +170,36 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       );
 
-      // Use Firebase Authentication Service to resend OTP
-      final result = await _authService.resendOTP(widget.userModel.phoneNumber!);
+      // Use Twilio Authentication Service to resend OTP
+      await authService.sendOTP(phoneNumber);
 
       if (!mounted) return;
 
-      if (result.isSuccess) {
-        // Clear current OTP fields
-        _clearOTPFields();
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ OTP resent successfully! Check your SMS.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-          ),
-        );
-
-        // Focus on first OTP field
-        _focusNodes[0].requestFocus();
-      } else {
-        // Handle resend failure
-        String errorMessage = result.message;
-        
-        if (result.error == PhoneAuthError.tooManyRequests) {
-          errorMessage = 'Too many requests. Please wait before requesting another code.';
-        }
-
-        _logger.w('OTP resend failed: $errorMessage');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ $errorMessage'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (error, stackTrace) {
-      _logger.e('Unexpected error during OTP resend', error: error, stackTrace: stackTrace);
+      // Clear current OTP fields
+      _clearOTPFields();
       
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Failed to resend OTP. Please try again.'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ OTP resent successfully! Check your SMS.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
+
+      // Focus on first OTP field
+      _focusNodes[0].requestFocus();
+    } catch (error, stackTrace) {
+      _logger.e('Error during OTP resend', error: error, stackTrace: stackTrace);
+      
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('❌ Failed to resend OTP. Please try again later.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 4),
+        ),
+      );
     }
   }
 

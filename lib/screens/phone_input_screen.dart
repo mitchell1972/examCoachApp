@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
-import '../services/firebase_auth_service.dart';
+import '../main.dart'; // Import to access global authService
 import 'otp_verification_screen.dart';
 
 class PhoneInputScreen extends StatefulWidget {
@@ -15,7 +15,6 @@ class PhoneInputScreen extends StatefulWidget {
 class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final AuthService _authService = AuthService();
   final Logger _logger = Logger();
   bool _isLoading = false;
 
@@ -24,8 +23,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     _phoneController.dispose();
     super.dispose();
   }
-
-
 
   Future<void> _sendOTP() async {
     if (!_formKey.currentState!.validate()) return;
@@ -38,77 +35,35 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       final phoneNumber = _phoneController.text.trim();
       _logger.i('Attempting to send OTP to phone number');
 
-      // Use Firebase Authentication Service to send real OTP
-      final result = await _authService.sendOTP(phoneNumber);
+      // Use Twilio Authentication Service to send OTP
+      await authService.sendOTP(phoneNumber);
 
       if (!mounted) return;
 
-      if (result.isSuccess) {
-        // Create user model with phone number and verification ID
-        final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-        final userModel = UserModel(
-          phoneNumber: cleanPhoneNumber, 
-          verificationId: result.verificationId,
-        );
+      // Navigate to OTP verification screen
+      final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+      final userModel = UserModel(
+        phoneNumber: cleanPhoneNumber,
+        verificationId: null, // No verification ID from Twilio yet
+      );
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ OTP sent successfully! Check your SMS.'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ OTP sent successfully! Check your SMS.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+        ),
+      );
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => OTPVerificationScreen(
+            userModel: userModel,
+            verificationId: null, // No verification ID from Twilio yet
           ),
-        );
-
-        // Navigate to OTP verification with Firebase verification ID
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => OTPVerificationScreen(
-              userModel: userModel,
-              verificationId: result.verificationId!,
-            ),
-          ),
-        );
-      } else {
-        // Handle different types of errors with appropriate user messages
-        String errorMessage = 'Failed to send OTP. Please try again.';
-        
-        if (result.error != null) {
-          switch (result.error!) {
-            case PhoneAuthError.invalidPhoneNumber:
-              errorMessage = 'Invalid phone number format. Please enter a valid number with country code.';
-              break;
-            case PhoneAuthError.tooManyRequests:
-              errorMessage = result.message;
-              break;
-            case PhoneAuthError.networkError:
-              errorMessage = 'Network error. Please check your internet connection.';
-              break;
-            case PhoneAuthError.operationNotAllowed:
-              errorMessage = 'Phone authentication is temporarily unavailable. Please try again later.';
-              break;
-            default:
-              errorMessage = result.message;
-          }
-        }
-
-        _logger.w('OTP send failed: ${result.message}');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ $errorMessage'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-            action: result.error == PhoneAuthError.networkError
-                ? SnackBarAction(
-                    label: 'Retry',
-                    textColor: Colors.white,
-                    onPressed: _sendOTP,
-                  )
-                : null,
-          ),
-        );
-      }
+        ),
+      );
     } catch (error, stackTrace) {
       _logger.e('Unexpected error during OTP send', error: error, stackTrace: stackTrace);
       
