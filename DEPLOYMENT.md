@@ -86,29 +86,6 @@ EOF
 3. Deploy automatically
 4. Your app will be available at: `https://YOUR_PROJECT.vercel.app`
 
-### Option 4: Firebase Hosting (Google's Platform)
-
-**Step 1: Install Firebase CLI**
-```bash
-npm install -g firebase-tools
-firebase login
-```
-
-**Step 2: Initialize Firebase**
-```bash
-firebase init hosting
-# Select your project or create new
-# Public directory: build/web
-# Single-page app: Yes
-# Automatic builds with GitHub: Optional
-```
-
-**Step 3: Deploy**
-```bash
-flutter build web --release --web-renderer canvaskit
-firebase deploy
-```
-
 ## 🛠️ Local Development & Testing
 
 ### Build and Test Locally
@@ -182,14 +159,12 @@ Once deployed, your app will be accessible at:
 - **GitHub Pages**: `https://YOUR_USERNAME.github.io/examCoachApp/`
 - **Netlify**: `https://YOUR_SITE_NAME.netlify.app`
 - **Vercel**: `https://YOUR_PROJECT.vercel.app`
-- **Firebase**: `https://YOUR_PROJECT.web.app`
 
 ## 🎯 Recommended Deployment Flow
 
 1. **Start with GitHub Pages** (easiest, automatic)
 2. **Upgrade to Netlify** (custom domain, better performance)
 3. **Consider Vercel** (edge network, serverless functions)
-4. **Use Firebase** (full Google ecosystem integration)
 
 ## 📊 Monitoring & Analytics
 
@@ -219,4 +194,4 @@ Each deployment option provides:
 
 ---
 
-**Need help?** Check the deployment logs in your chosen platform's dashboard for any build issues. 
+**Need help?** Check the deployment logs in your chosen platform's dashboard for any build issues.

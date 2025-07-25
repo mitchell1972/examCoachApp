@@ -124,89 +124,7 @@ TWILIO_VERIFY_SERVICE_SID=your_verify_service_sid_here
 PORT=3000
 ```
 
-### Option 2: Firebase Cloud Functions
-
-```javascript
-// functions/index.js
-const functions = require('firebase-functions');
-const twilio = require('twilio');
-
-// Initialize Twilio client
-const accountSid = functions.config().twilio.account_sid;
-const authToken = functions.config().twilio.auth_token;
-const verifyServiceSid = functions.config().twilio.verify_service_sid;
-const client = twilio(accountSid, authToken);
-
-exports.sendOTP = functions.https.onRequest(async (req, res) => {
-  // Enable CORS
-  res.set('Access-Control-Allow-Origin', '*');
-  
-  if (req.method === 'OPTIONS') {
-    res.set('Access-Control-Allow-Methods', 'POST');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.status(204).send('');
-    return;
-  }
-  
-  try {
-    const { phoneNumber } = req.body;
-    
-    const verification = await client.verify.v2
-      .services(verifyServiceSid)
-      .verifications
-      .create({ to: phoneNumber, channel: 'sms' });
-    
-    res.json({ status: 'success', message: 'Verification code sent' });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Failed to send verification code' });
-  }
-});
-
-exports.verifyOTP = functions.https.onRequest(async (req, res) => {
-  // Enable CORS
-  res.set('Access-Control-Allow-Origin', '*');
-  
-  if (req.method === 'OPTIONS') {
-    res.set('Access-Control-Allow-Methods', 'POST');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.status(204).send('');
-    return;
-  }
-  
-  try {
-    const { phoneNumber, code } = req.body;
-    
-    const verificationCheck = await client.verify.v2
-      .services(verifyServiceSid)
-      .verificationChecks
-      .create({ to: phoneNumber, code: code });
-    
-    if (verificationCheck.status === 'approved') {
-      const userId = `user_${Date.now()}`;
-      res.json({ 
-        status: 'success',
-        userId: userId,
-        phoneNumber: phoneNumber
-      });
-    } else {
-      res.status(400).json({ error: 'Invalid verification code' });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Verification failed' });
-  }
-});
-```
-
-**Set Firebase Functions Config:**
-```bash
-firebase functions:config:set twilio.account_sid="your_account_sid" \
-  twilio.auth_token="your_auth_token" \
-  twilio.verify_service_sid="your_verify_service_sid"
-```
-
-### Option 3: Vercel/Netlify Serverless Functions
+### Option 2: Vercel/Netlify Serverless Functions
 
 **Vercel Example (api/send-otp.js):**
 ```javascript
@@ -296,4 +214,4 @@ For Twilio-specific issues:
 
 For implementation help:
 - Review the example backend implementations above
-- Check the Flutter app logs for detailed error messages 
+- Check the Flutter app logs for detailed error messages
