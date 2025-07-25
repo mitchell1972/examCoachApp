@@ -1,8 +1,8 @@
 {
-  "buildCommand": "flutter build web --release --web-renderer canvaskit",
+  "buildCommand": "export PATH=\"$PWD/flutter/bin:$PATH\" && flutter build web --release",
   "outputDirectory": "build/web",
   "framework": null,
-  "installCommand": "curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.3-stable.tar.xz | tar -xJ && export PATH=\"$PWD/flutter/bin:$PATH\" && flutter config --enable-web && flutter pub get",
+  "installCommand": "./deploy.sh",
   "redirects": [
     {
       "source": "/((?!api/*).*)",

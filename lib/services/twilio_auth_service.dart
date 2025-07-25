@@ -20,7 +20,7 @@ class TwilioAuthService implements AuthService {
   
   // Your backend API endpoint
   // Replace with your actual backend URL
-  static const String _baseUrl = 'https://your-backend-api.com/api';
+  static const String _baseUrl = 'https://exam-coach-app.vercel.app/api';
   
   // For development, you can use demo mode
   final bool _isDemoMode;
@@ -155,4 +155,4 @@ class DemoAuthService extends TwilioAuthService {
     final end = phoneNumber.substring(phoneNumber.length - 4);
     return '$start****$end';
   }
-} 
+}
