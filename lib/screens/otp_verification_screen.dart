@@ -92,63 +92,27 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         widget.userModel.id = verifiedUser.id;
         widget.userModel.otpCode = _currentOTP;
         
-        _logger.i('OTP verified successfully for user: ${verifiedUser.id}');
+        _logger.i('OTP verified successfully for user: ${verifiedUser.id ?? 'unknown'}');
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Phone number verified successfully!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-
-        // Navigate to exam selection
-        Navigator.of(context).pushReplacement(
+        // Navigate to next screen
+        Navigator.pushReplacement(
+          context,
           MaterialPageRoute(
             builder: (context) => ExamSelectionScreen(userModel: widget.userModel),
           ),
         );
-      } else {
-        // Handle verification failure
-        _logger.w('OTP verification failed: Invalid verification code');
-
-        // Clear OTP fields on error
-        _clearOTPFields();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Invalid verification code. Please try again.'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-          ),
-        );
-
-        // Focus on first OTP field for retry
-        _focusNodes[0].requestFocus();
       }
-    } catch (error, stackTrace) {
-      _logger.e('Unexpected error during OTP verification', error: error, stackTrace: stackTrace);
+    } catch (error) {
+      _logger.w('OTP verification failed: $error');
       
-      if (mounted) {
-        String errorMessage = 'An unexpected error occurred. Please try again.';
-        if (error.toString().contains('Phone number is missing')) {
-          errorMessage = 'Phone number is missing. Please go back and enter your phone number.';
-        } else if (error.toString().contains('Invalid verification code')) {
-          errorMessage = 'Invalid verification code. Please try again.';
-        }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ $errorMessage'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-          ),
-        );
-
-        // Clear OTP fields and focus first field
-        _clearOTPFields();
-        _focusNodes[0].requestFocus();
-      }
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ OTP verification failed: ${error.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -159,72 +123,47 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   }
 
   Future<void> _resendOTP() async {
-    try {
-      _logger.i('Attempting to resend OTP');
+    setState(() {
+      _isLoading = true;
+    });
 
+    try {
+      _logger.i('Attempting to resend OTP code');
+      
       // Check if phoneNumber is not null
       final phoneNumber = widget.userModel.phoneNumber;
       if (phoneNumber == null || phoneNumber.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ Phone number is missing. Please go back and enter your phone number.'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 4),
-          ),
-        );
-        return;
+        throw Exception('Phone number is missing');
       }
-
-      // Show loading message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('🔄 Resending OTP...'),
-          backgroundColor: Colors.blue,
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // Use Twilio Authentication Service to resend OTP
+      
       await authService.sendOTP(phoneNumber);
-
+      
       if (!mounted) return;
-
-      // Clear current OTP fields
-      _clearOTPFields();
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ OTP resent successfully! Check your SMS.'),
+          content: Text('✅ OTP sent successfully'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
         ),
       );
-
-      // Focus on first OTP field
-      _focusNodes[0].requestFocus();
-    } catch (error, stackTrace) {
-      _logger.e('Error during OTP resend', error: error, stackTrace: stackTrace);
+    } catch (error) {
+      _logger.e('Failed to resend OTP', error: error);
       
       if (!mounted) return;
-
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('❌ Failed to resend OTP. Please try again later.'),
+        SnackBar(
+          content: Text('❌ Failed to resend OTP: ${error.toString().replaceAll('Exception: ', '')}'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 4),
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-  }
-
-  /// Clear all OTP input fields
-  void _clearOTPFields() {
-    for (var controller in _otpControllers) {
-      controller.clear();
-    }
-    setState(() {
-      _currentOTP = '';
-    });
   }
 
   @override
