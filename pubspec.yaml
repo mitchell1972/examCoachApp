@@ -1,38 +1,31 @@
-name: examcoachapp
-description: A new Flutter project.
-publish_to: 'none'
+name: exam_coach_app
+description: A comprehensive exam preparation application with AI-powered coaching and real-time progress tracking.
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.1.5 <4.0.0'
+  sdk: '>=3.5.3 <4.0.0'
+  flutter: ">=3.24.3"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  # Remove Firebase dependencies - removed cloud_firestore too to avoid conflicts
-  # firebase_core: ^2.15.1
-  # firebase_auth: ^4.9.0
-  # cloud_firestore: ^4.9.1
-  provider: ^6.0.5
-  shared_preferences: ^2.2.1
-  intl: ^0.18.1
-  connectivity_plus: ^5.0.1
-  intl_phone_field: ^3.2.0
-  fl_chart: ^0.65.0
-  logger: ^2.0.2+1
-  # Add HTTP package for API calls
-  http: ^1.1.0
-  # Add crypto for generating secure tokens
-  crypto: ^3.0.3
-  uuid: ^4.2.1
-  # Security service dependency
-  flutter_secure_storage: ^9.0.0
+
+  # UI & Material Design
+  cupertino_icons: ^1.0.8
+  
+  # Logging
+  logger: ^2.4.0
+  
+  # HTTP Requests
+  http: ^1.2.2
+  
+  # Environment Configuration
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true

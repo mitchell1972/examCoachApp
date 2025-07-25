@@ -234,7 +234,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                   child: Text(
                     kReleaseMode 
-                      ? '📱 OTP sending may fail\n⚠️ Firebase config incomplete'
+                      ? '📱 PRODUCTION MODE\n⚠️ Twilio config required for SMS'
                       : '🎭 DEMO CODE: 123456\n(No real SMS sent)',
                     style: TextStyle(
                       fontSize: 16,

@@ -160,7 +160,7 @@ class ErrorHandler {
     String? context,
     ErrorSeverity severity,
   ) {
-    // This would integrate with services like Firebase Crashlytics, Sentry, etc.
+    // This would integrate with services like Sentry, LogRocket, etc.
     // For now, it's a placeholder for production error tracking
     _logger.i('Production monitoring: $severity - $error');
   }

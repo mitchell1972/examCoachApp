@@ -67,14 +67,13 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
     } catch (error, stackTrace) {
       _logger.e('Unexpected error during OTP send', error: error, stackTrace: stackTrace);
       
-      // Provide more specific error messages for common Firebase issues
+      // Provide more specific error messages for common API issues
       String errorMessage = 'An unexpected error occurred. Please try again.';
       
-      if (error.toString().contains('firebase') || 
-          error.toString().contains('Firebase') ||
+      if (error.toString().contains('your-backend-api.com') ||
           error.toString().contains('your-web-api-key-here')) {
-        errorMessage = '🔥 Firebase configuration incomplete.\n'
-                      'In production: Real Firebase config needed.\n'
+        errorMessage = '🔧 API configuration incomplete.\n'
+                      'In production: Real API endpoints needed.\n'
                       'For demo: Use local development mode.';
       } else if (error.toString().contains('network') || 
                  error.toString().contains('connection')) {
@@ -169,7 +168,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ),
                     child: Text(
                       kReleaseMode 
-                        ? '🔥 PRODUCTION MODE\n⚠️ Firebase config: placeholder values\nReal SMS requires valid Firebase setup'
+                        ? '🔥 PRODUCTION MODE\n⚠️ Twilio config: placeholder values\nReal SMS requires valid Twilio setup'
                         : '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
                       style: TextStyle(
                         fontSize: 14,
