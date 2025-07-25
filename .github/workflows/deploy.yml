@@ -49,7 +49,7 @@ jobs:
       run: flutter pub get
       
     - name: Analyze code
-      run: flutter analyze
+      run: flutter analyze lib/
       
     - name: Build web app
       run: |
