@@ -13,4 +13,5 @@ linter:
     prefer_const_constructors: false  # Disable to reduce warnings
     prefer_const_literals_to_create_immutables: false
     require_trailing_commas: false
-    avoid_redundant_argument_values: false 
+    avoid_redundant_argument_values: false
+    use_super_parameters: false
