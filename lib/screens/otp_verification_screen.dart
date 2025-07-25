@@ -78,7 +78,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
       // Check if phoneNumber is not null
       final phoneNumber = widget.userModel.phoneNumber;
-      if (phoneNumber == null) {
+      if (phoneNumber == null || phoneNumber.isEmpty) {
         throw Exception('Phone number is missing');
       }
 
@@ -130,9 +130,16 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       _logger.e('Unexpected error during OTP verification', error: error, stackTrace: stackTrace);
       
       if (mounted) {
+        String errorMessage = 'An unexpected error occurred. Please try again.';
+        if (error.toString().contains('Phone number is missing')) {
+          errorMessage = 'Phone number is missing. Please go back and enter your phone number.';
+        } else if (error.toString().contains('Invalid verification code')) {
+          errorMessage = 'Invalid verification code. Please try again.';
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('❌ An unexpected error occurred. Please try again.'),
+          SnackBar(
+            content: Text('❌ $errorMessage'),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 4),
           ),
@@ -157,8 +164,15 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
       // Check if phoneNumber is not null
       final phoneNumber = widget.userModel.phoneNumber;
-      if (phoneNumber == null) {
-        throw Exception('Phone number is missing');
+      if (phoneNumber == null || phoneNumber.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('❌ Phone number is missing. Please go back and enter your phone number.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        return;
       }
 
       // Show loading message

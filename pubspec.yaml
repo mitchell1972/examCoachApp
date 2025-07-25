@@ -10,10 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  # Remove Firebase dependencies
+  # Remove Firebase dependencies - removed cloud_firestore too to avoid conflicts
   # firebase_core: ^2.15.1
   # firebase_auth: ^4.9.0
-  cloud_firestore: ^4.9.1
+  # cloud_firestore: ^4.9.1
   provider: ^6.0.5
   shared_preferences: ^2.2.1
   intl: ^0.18.1
