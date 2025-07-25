@@ -3,7 +3,7 @@ description: A comprehensive exam preparation application with AI-powered coachi
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.5.3 <4.0.0'
+  sdk: '>=3.5.0 <4.0.0'
   flutter: ">=3.24.3"
 
 dependencies:
@@ -33,4 +33,4 @@ flutter:
   # Assets (secure asset handling)
   # assets:
   #   - assets/images/
-  #   - assets/icons/ 
+  #   - assets/icons/
