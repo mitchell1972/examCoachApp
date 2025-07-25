@@ -6,7 +6,7 @@ import '../main.dart'; // Import to access global authService
 import 'otp_verification_screen.dart';
 
 class PhoneInputScreen extends StatefulWidget {
-  const PhoneInputScreen({Key? key}) : super(key: key);
+  const PhoneInputScreen({super.key});
 
   @override
   State<PhoneInputScreen> createState() => _PhoneInputScreenState();
@@ -264,4 +264,4 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       ),
     );
   }
-} 
+}

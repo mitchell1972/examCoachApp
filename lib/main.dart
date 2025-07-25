@@ -36,7 +36,7 @@ void main() async {
 }
 
 class ExamCoachApp extends StatelessWidget {
-  const ExamCoachApp({Key? key}) : super(key: key);
+  const ExamCoachApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,4 +50,4 @@ class ExamCoachApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
     );
   }
-} 
+}

@@ -11,10 +11,10 @@ class OTPVerificationScreen extends StatefulWidget {
   final String? verificationId; // Made optional for Twilio
 
   const OTPVerificationScreen({
-    Key? key,
+    super.key,
     required this.userModel,
     this.verificationId, // Made optional
-  }) : super(key: key);
+  });
 
   @override
   State<OTPVerificationScreen> createState() => _OTPVerificationScreenState();
@@ -353,4 +353,4 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       ),
     );
   }
-} 
+}

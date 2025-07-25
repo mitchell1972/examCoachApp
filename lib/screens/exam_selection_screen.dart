@@ -6,9 +6,9 @@ class ExamSelectionScreen extends StatefulWidget {
   final UserModel userModel;
 
   const ExamSelectionScreen({
-    Key? key,
+    super.key,
     required this.userModel,
-  }) : super(key: key);
+  });
 
   @override
   State<ExamSelectionScreen> createState() => _ExamSelectionScreenState();
@@ -259,4 +259,4 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
       ),
     );
   }
-} 
+}

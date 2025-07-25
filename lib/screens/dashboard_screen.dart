@@ -5,9 +5,9 @@ class DashboardScreen extends StatefulWidget {
   final UserModel userModel;
 
   const DashboardScreen({
-    Key? key,
+    super.key,
     required this.userModel,
-  }) : super(key: key);
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -363,4 +363,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-} 
+}
