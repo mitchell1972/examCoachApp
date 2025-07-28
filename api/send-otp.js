@@ -10,6 +10,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://mitchell1972.github.io');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
