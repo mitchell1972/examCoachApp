@@ -14,6 +14,20 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  String _getExamDisplayText() {
+    if (widget.userModel.examTypes.isNotEmpty) {
+      return widget.userModel.examTypes.join(' & ');
+    }
+    return widget.userModel.examType ?? 'N/A';
+  }
+
+  String _getSubjectDisplayText() {
+    if (widget.userModel.subjects.isNotEmpty) {
+      return widget.userModel.subjects.join(' & ');
+    }
+    return widget.userModel.subject ?? 'N/A';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         Text(
-          'Exam: ${widget.userModel.examType}',
+          'Exam: ${_getExamDisplayText()}',
           style: TextStyle(
             fontSize: 14,
             color: Colors.white.withOpacity(0.8),
@@ -213,9 +227,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           
           _buildInfoRow('Phone', widget.userModel.phoneNumber ?? 'N/A'),
           const SizedBox(height: 8),
-          _buildInfoRow('Exam Type', widget.userModel.examType ?? 'N/A'),
+          _buildInfoRow('Exam Type', _getExamDisplayText()),
           const SizedBox(height: 8),
-          _buildInfoRow('Subject', widget.userModel.subject ?? 'N/A'),
+          _buildInfoRow('Subject', _getSubjectDisplayText()),
           const SizedBox(height: 8),
           _buildInfoRow('Status', widget.userModel.status),
         ],
@@ -340,7 +354,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Starting ${widget.userModel.subject} quiz for ${widget.userModel.examType}...',
+              'Starting ${_getSubjectDisplayText()} quiz for ${_getExamDisplayText()}...',
             ),
             backgroundColor: Colors.green,
           ),
