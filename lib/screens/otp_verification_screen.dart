@@ -218,34 +218,6 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
-                
-                // Environment Notice
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: kReleaseMode 
-                      ? Colors.orange.withOpacity(0.2)
-                      : Colors.green.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: kReleaseMode 
-                      ? Colors.orange.withOpacity(0.5)
-                      : Colors.green.withOpacity(0.5)),
-                  ),
-                  child: Text(
-                    kReleaseMode 
-                      ? '📱 PRODUCTION MODE\n⚠️ Twilio config required for SMS'
-                      : '🎭 DEMO CODE: 123456\n(No real SMS sent)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: kReleaseMode 
-                        ? Colors.orange.shade100
-                        : Colors.green.shade100,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
                 const SizedBox(height: 24),
                 
                 // OTP Input Row

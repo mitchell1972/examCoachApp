@@ -88,16 +88,16 @@ void main() {
         expect(find.byIcon(Icons.phone_android), findsOneWidget);
       });
 
-      testWidgets('should show environment notice', (WidgetTester tester) async {
+      testWidgets('should show phone input field', (WidgetTester tester) async {
         await tester.pumpWidget(
           const MaterialApp(
             home: PhoneInputScreen(),
           ),
         );
 
-        // Should show demo mode notice
-        expect(find.textContaining('DEMO MODE'), findsOneWidget);
-        expect(find.textContaining('No real SMS - Use code: 123456'), findsOneWidget);
+        // Should show phone input field
+        expect(find.byType(TextFormField), findsOneWidget);
+        expect(find.text('+1 234 567 8900'), findsOneWidget); // hint text
       });
 
       testWidgets('should show proper hint text', (WidgetTester tester) async {

@@ -152,34 +152,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
-                  
-                  // Environment Notice
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: kReleaseMode 
-                        ? Colors.orange.withOpacity(0.2)
-                        : Colors.orange.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: kReleaseMode 
-                        ? Colors.orange.withOpacity(0.5)
-                        : Colors.orange.withOpacity(0.5)),
-                    ),
-                    child: Text(
-                      kReleaseMode 
-                        ? '🔥 PRODUCTION MODE\n⚠️ Twilio config: placeholder values\nReal SMS requires valid Twilio setup'
-                        : '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: kReleaseMode 
-                          ? Colors.orange.shade100
-                          : Colors.orange.shade100,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
                   const SizedBox(height: 32),
 
                   // Phone number input
