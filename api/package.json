@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "twilio": "^5.2.2"
   }
