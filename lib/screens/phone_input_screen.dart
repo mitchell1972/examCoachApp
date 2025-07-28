@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../main.dart'; // Import to access global authService
@@ -34,7 +35,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       final phoneNumber = _phoneController.text.trim();
       _logger.i('Attempting to send OTP to phone number');
 
-      // Use Authentication Service to send OTP
+      // Use Twilio Authentication Service to send OTP
       await authService.sendOTP(phoneNumber);
 
       if (!mounted) return;
@@ -43,7 +44,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       final cleanPhoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
       final userModel = UserModel(
         phoneNumber: cleanPhoneNumber,
-        verificationId: null, // Demo mode - no verification ID needed
+        verificationId: null, // No verification ID from Twilio yet
       );
 
       // Show success message
@@ -59,7 +60,7 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         MaterialPageRoute(
           builder: (context) => OTPVerificationScreen(
             userModel: userModel,
-            verificationId: null, // Demo mode - no verification ID needed
+            verificationId: null, // No verification ID from Twilio yet
           ),
         ),
       );
@@ -153,19 +154,27 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                   ),
                   const SizedBox(height: 12),
                   
-                  // Demo Notice
+                  // Environment Notice
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.2),
+                      color: kReleaseMode 
+                        ? Colors.orange.withOpacity(0.2)
+                        : Colors.orange.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.blue.withOpacity(0.5)),
+                      border: Border.all(color: kReleaseMode 
+                        ? Colors.orange.withOpacity(0.5)
+                        : Colors.orange.withOpacity(0.5)),
                     ),
-                    child: const Text(
-                      '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
+                    child: Text(
+                      kReleaseMode 
+                        ? '🔥 PRODUCTION MODE\n⚠️ Twilio config: placeholder values\nReal SMS requires valid Twilio setup'
+                        : '🎭 DEMO MODE\nNo real SMS - Use code: 123456',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: kReleaseMode 
+                          ? Colors.orange.shade100
+                          : Colors.orange.shade100,
                         fontWeight: FontWeight.w500,
                       ),
                       textAlign: TextAlign.center,
