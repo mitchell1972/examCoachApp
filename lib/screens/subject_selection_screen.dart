@@ -15,7 +15,7 @@ class SubjectSelectionScreen extends StatefulWidget {
 }
 
 class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
-  String? _selectedSubject;
+  List<String> _selectedSubjects = [];
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _subjects = [
@@ -77,23 +77,49 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
     },
   ];
 
-  Future<void> _selectSubject(String subject) async {
+  void _toggleSubject(String subject) {
     setState(() {
-      _selectedSubject = subject;
+      if (_selectedSubjects.contains(subject)) {
+        _selectedSubjects.remove(subject);
+      } else {
+        _selectedSubjects.add(subject);
+      }
+    });
+  }
+
+  Future<void> _finishSetup() async {
+    if (_selectedSubjects.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one subject'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
       _isLoading = true;
     });
 
     // Simulate processing and account creation
     await Future.delayed(const Duration(seconds: 2));
 
-    widget.userModel.subject = subject;
+    // Set both new and legacy fields
+    widget.userModel.subjects = List<String>.from(_selectedSubjects);
+    widget.userModel.subject = _selectedSubjects.first; // For backward compatibility
     widget.userModel.status = 'trial';
     widget.userModel.trialEndTime = DateTime.now().add(const Duration(hours: 48));
 
     if (mounted) {
+      final examText = widget.userModel.examTypes.isNotEmpty 
+          ? widget.userModel.examTypes.join(' & ')
+          : widget.userModel.examType ?? 'Unknown';
+      final subjectText = _selectedSubjects.join(' & ');
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Account created successfully! Welcome to Exam Coach.'),
+          content: Text('Account created successfully! Exam: $examText, Subjects: $subjectText'),
           backgroundColor: Colors.green,
           duration: const Duration(seconds: 3),
         ),
@@ -157,7 +183,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                 const SizedBox(height: 8),
                 
                 Text(
-                  'Select your primary subject for ${widget.userModel.examType} preparation',
+                  'Select subjects for ${widget.userModel.examType} preparation (tap multiple)',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withOpacity(0.9),
@@ -178,7 +204,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                     itemCount: _subjects.length,
                     itemBuilder: (context, index) {
                       final subject = _subjects[index];
-                      final isSelected = _selectedSubject == subject['name'];
+                      final isSelected = _selectedSubjects.contains(subject['name']);
                       
                       return Material(
                         borderRadius: BorderRadius.circular(16),
@@ -186,7 +212,7 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                         color: Colors.transparent,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
-                          onTap: _isLoading ? null : () => _selectSubject(subject['name']),
+                          onTap: _isLoading ? null : () => _toggleSubject(subject['name']),
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -266,12 +292,12 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                   ),
                 ),
                 
-                // Finish Button (Alternative way to proceed)
-                if (_selectedSubject != null && !_isLoading)
+                // Finish Button
+                if (_selectedSubjects.isNotEmpty && !_isLoading)
                   Padding(
                     padding: const EdgeInsets.only(top: 16),
                     child: ElevatedButton(
-                      onPressed: () => _selectSubject(_selectedSubject!),
+                      onPressed: _finishSetup,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.deepPurple,
@@ -280,12 +306,23 @@ class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Finish Setup',
-                        style: TextStyle(
+                      child: Text(
+                        'Finish Setup (${_selectedSubjects.length} selected)',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                  ),
+                
+                // Loading indicator
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
                   ),

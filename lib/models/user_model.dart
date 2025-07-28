@@ -3,8 +3,10 @@ class UserModel {
   String? phoneNumber;
   String? verificationId;
   String? otpCode;
-  String? examType;
-  String? subject;
+  String? examType; // Keep for backward compatibility
+  String? subject; // Keep for backward compatibility
+  List<String> examTypes; // New: Support multiple exam types
+  List<String> subjects; // New: Support multiple subjects
   String status;
   DateTime? trialEndTime;
   String? name;
@@ -22,6 +24,8 @@ class UserModel {
     this.otpCode,
     this.examType,
     this.subject,
+    List<String>? examTypes,
+    List<String>? subjects,
     this.status = 'trial',
     this.trialEndTime,
     this.name,
@@ -31,7 +35,8 @@ class UserModel {
     this.studyHoursPerDay,
     this.targetScore,
     this.createdAt,
-  });
+  }) : examTypes = examTypes ?? [],
+       subjects = subjects ?? [];
 
   bool get isTrialActive {
     if (trialEndTime == null) return false;
@@ -53,6 +58,8 @@ class UserModel {
       'otpCode': otpCode,
       'examType': examType,
       'subject': subject,
+      'examTypes': examTypes,
+      'subjects': subjects,
       'status': status,
       'trialEndTime': trialEndTime?.toIso8601String(),
       'name': name,
@@ -73,6 +80,12 @@ class UserModel {
       otpCode: json['otpCode'],
       examType: json['examType'],
       subject: json['subject'],
+      examTypes: json['examTypes'] != null 
+          ? List<String>.from(json['examTypes'])
+          : [],
+      subjects: json['subjects'] != null 
+          ? List<String>.from(json['subjects'])
+          : [],
       status: json['status'] ?? 'trial',
       trialEndTime: json['trialEndTime'] != null 
           ? DateTime.parse(json['trialEndTime'])
@@ -90,4 +103,4 @@ class UserModel {
           : null,
     );
   }
-} 
+}

@@ -15,16 +15,26 @@ class ExamSelectionScreen extends StatefulWidget {
 }
 
 class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
-  String? _selectedExam;
+  List<String> _selectedExams = [];
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _examTypes = [
+    {
+      'name': 'Both',
+      'fullName': 'WAEC & JAMB Combined',
+      'description': 'Prepare for both WAEC and JAMB examinations',
+      'icon': Icons.school_outlined,
+      'color': Colors.deepOrange,
+      'isCombo': true,
+      'includes': ['WAEC', 'JAMB'],
+    },
     {
       'name': 'WAEC',
       'fullName': 'West African Examinations Council',
       'description': 'Senior Secondary Certificate Examination',
       'icon': Icons.school,
       'color': Colors.blue,
+      'isCombo': false,
     },
     {
       'name': 'JAMB',
@@ -32,6 +42,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
       'description': 'Unified Tertiary Matriculation Examination',
       'icon': Icons.library_books,
       'color': Colors.green,
+      'isCombo': false,
     },
     {
       'name': 'NECO',
@@ -39,6 +50,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
       'description': 'Senior School Certificate Examination',
       'icon': Icons.book,
       'color': Colors.orange,
+      'isCombo': false,
     },
     {
       'name': 'NABTEB',
@@ -46,6 +58,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
       'description': 'National Business Certificate & National Technical Certificate',
       'icon': Icons.business,
       'color': Colors.purple,
+      'isCombo': false,
     },
     {
       'name': 'GCE',
@@ -53,19 +66,27 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
       'description': 'Advanced Level Examinations',
       'icon': Icons.workspace_premium,
       'color': Colors.red,
+      'isCombo': false,
     },
   ];
 
   Future<void> _selectExam(String examType) async {
     setState(() {
-      _selectedExam = examType;
       _isLoading = true;
     });
 
     // Simulate processing
     await Future.delayed(const Duration(milliseconds: 500));
 
-    widget.userModel.examType = examType;
+    // Handle "Both" selection
+    final examData = _examTypes.firstWhere((exam) => exam['name'] == examType);
+    if (examData['isCombo'] == true) {
+      widget.userModel.examTypes = List<String>.from(examData['includes']);
+      widget.userModel.examType = 'Both'; // For backward compatibility
+    } else {
+      widget.userModel.examTypes = [examType];
+      widget.userModel.examType = examType; // For backward compatibility
+    }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +168,7 @@ class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
                     itemCount: _examTypes.length,
                     itemBuilder: (context, index) {
                       final exam = _examTypes[index];
-                      final isSelected = _selectedExam == exam['name'];
+                      final isSelected = _selectedExams.contains(exam['name']);
                       
                       return Container(
                         margin: const EdgeInsets.only(bottom: 16),
