@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'screens/onboarding_screen.dart';
-import 'services/twilio_auth_service.dart';
 import 'services/app_config.dart';
+import 'services/auth_service.dart';
 
 final Logger appLogger = Logger();
 late AuthService authService;
@@ -15,14 +15,9 @@ void main() async {
     // Initialize app configuration
     await AppConfig.initialize();
     
-    // Initialize Authentication based on environment
-    if (AppConfig.instance.isDevelopment) {
-      authService = DemoAuthService();
-      appLogger.i('✅ Demo Auth Service: Initialized successfully');
-    } else {
-      authService = TwilioAuthService();
-      appLogger.i('✅ Twilio Auth Service: Initialized successfully');
-    }
+    // Initialize Authentication Service
+    authService = DemoAuthService();
+    appLogger.i('✅ Auth Service: Initialized successfully');
     
     appLogger.i('App initialization completed successfully');
   } catch (error, stackTrace) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
@@ -8,7 +7,7 @@ import 'exam_selection_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final UserModel userModel;
-  final String? verificationId; // Made optional for Twilio
+  final String? verificationId; // Demo mode - verification ID not needed
 
   const OTPVerificationScreen({
     super.key,
@@ -82,7 +81,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         throw Exception('Phone number is missing');
       }
 
-      // Use Twilio Authentication Service to verify OTP
+      // Use Authentication Service to verify OTP
       final verifiedUser = await authService.verifyOTP(phoneNumber, _currentOTP);
 
       if (!mounted) return;
@@ -220,27 +219,19 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                 ),
                 const SizedBox(height: 16),
                 
-                // Environment Notice
+                // Demo Notice
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: kReleaseMode 
-                      ? Colors.orange.withOpacity(0.2)
-                      : Colors.green.withOpacity(0.2),
+                    color: Colors.blue.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: kReleaseMode 
-                      ? Colors.orange.withOpacity(0.5)
-                      : Colors.green.withOpacity(0.5)),
+                    border: Border.all(color: Colors.blue.withOpacity(0.5)),
                   ),
-                  child: Text(
-                    kReleaseMode 
-                      ? '📱 PRODUCTION MODE\n⚠️ Twilio config required for SMS'
-                      : '🎭 DEMO CODE: 123456\n(No real SMS sent)',
+                  child: const Text(
+                    '🎭 DEMO CODE: 123456\n(No real SMS sent)',
                     style: TextStyle(
                       fontSize: 16,
-                      color: kReleaseMode 
-                        ? Colors.orange.shade100
-                        : Colors.green.shade100,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
