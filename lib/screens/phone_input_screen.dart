@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../main.dart'; // Import to access global authService

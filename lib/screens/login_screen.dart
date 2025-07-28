@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../services/storage_service.dart';
-import '../services/twilio_auth_service.dart';
 import '../main.dart';
 import 'otp_verification_screen.dart';
 import 'forgot_phone_screen.dart';
@@ -74,13 +73,15 @@ class _LoginScreenState extends State<LoginScreen> {
         _registeredUser!.lastLoginDate = DateTime.now();
         await _storageService.updateUser(_registeredUser!);
         
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => OTPVerificationScreen(
-              userModel: _registeredUser!,
+        if (mounted) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => OTPVerificationScreen(
+                userModel: _registeredUser!,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     } catch (e) {
       _logger.e('❌ Failed to send OTP: $e');

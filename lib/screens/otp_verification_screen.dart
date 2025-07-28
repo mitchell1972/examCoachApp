@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
@@ -106,12 +105,14 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         _logger.i('Trial activated - expires: ${widget.userModel.trialExpires}');
 
         // Navigate to next screen
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExamSelectionScreen(userModel: widget.userModel),
-          ),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExamSelectionScreen(userModel: widget.userModel),
+            ),
+          );
+        }
       }
     } catch (error) {
       _logger.w('OTP verification failed: $error');

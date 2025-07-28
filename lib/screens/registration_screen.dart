@@ -279,7 +279,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       child: Row(
         children: List.generate(_totalSteps, (index) {
           final isActive = index <= _currentStep;
-          final isCompleted = index < _currentStep;
           
           return Expanded(
             child: Container(
@@ -672,7 +671,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
             ),
           );
-        }).toList(),
+        }),
         
         if (required && selectedValues.isEmpty)
           Padding(
@@ -706,7 +705,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             if (allSelected) {
               onChanged([]);
             } else {
-              onChanged(options.map((option) => option['value'] as String).toList());
+              onChanged([...options.map((option) => option['value'] as String)]);
             }
           },
           child: Container(
