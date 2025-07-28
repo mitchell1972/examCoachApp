@@ -4,3 +4,4 @@ curl -fsSL https://storage.googleapis.com/flutter_infra_release/releases/stable/
 export PATH="$PWD/flutter/bin:$PATH"
 flutter config --enable-web
 flutter pub get
+(cd api && npm install)
