@@ -1,17 +1,28 @@
 {
-  "buildCommand": "export PATH=\"$PWD/flutter/bin:$PATH\" && flutter build web --release --base-href /",
-  "outputDirectory": "build/web",
-  "framework": null,
-  "installCommand": "./deploy.sh",
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "redirects": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/((?!api/|index.html).*)",
-      "destination": "/index.html"
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build/web"
+      }
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/build/web/$1"
+    }
+  ],
+  "installCommand": "./deploy.sh",
+  "buildCommand": "export PATH=\"$PWD/flutter/bin:$PATH\" && flutter build web --release --base-href /"
 }

@@ -1,0 +1,7 @@
+{
+  "name": "exam-coach-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'Flutter build handled by installCommand'"
+  }
+}
