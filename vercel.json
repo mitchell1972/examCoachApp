@@ -3,6 +3,11 @@
   "outputDirectory": "build/web",
   "framework": null,
   "installCommand": "./deploy.sh",
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "redirects": [
     {
       "source": "/((?!api/|index.html).*)",
