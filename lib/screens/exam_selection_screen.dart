@@ -15,7 +15,7 @@ class ExamSelectionScreen extends StatefulWidget {
 }
 
 class _ExamSelectionScreenState extends State<ExamSelectionScreen> {
-  List<String> _selectedExams = [];
+  final List<String> _selectedExams = [];
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _examTypes = [

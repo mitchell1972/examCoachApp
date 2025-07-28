@@ -15,7 +15,7 @@ class SubjectSelectionScreen extends StatefulWidget {
 }
 
 class _SubjectSelectionScreenState extends State<SubjectSelectionScreen> {
-  List<String> _selectedSubjects = [];
+  final List<String> _selectedSubjects = [];
   bool _isLoading = false;
 
   final List<Map<String, dynamic>> _subjects = [
