@@ -9,6 +9,7 @@ class UserModel {
   List<String> subjects; // New: Support multiple subjects
   String status;
   DateTime? trialEndTime;
+  DateTime? trialStartTime; // New: Track when trial started
   String? name;
   String? email;
   String? examInterest;
@@ -16,6 +17,23 @@ class UserModel {
   int? studyHoursPerDay;
   String? targetScore;
   DateTime? createdAt;
+
+  // Enhanced registration fields
+  String? fullName;
+  String? currentClass; // SS1, SS2, SS3, Graduate, Other
+  String? schoolType; // Public, Private, Homeschool, Not in school
+  List<String> studyFocus; // JAMB, WAEC, NECO, Subject Mastery, General Review
+  List<String> scienceSubjects; // Math, Physics, Chemistry, Biology, etc.
+  DateTime? targetExamDate;
+  int? studyHoursPerWeek;
+  List<String> difficultyAreas;
+  
+  // Registration tracking
+  bool isRegistered;
+  bool isVerified;
+  DateTime? registrationDate;
+  DateTime? lastLoginDate;
+  String registrationStatus; // 'pending', 'completed', 'verified'
 
   UserModel({
     this.id,
@@ -28,6 +46,7 @@ class UserModel {
     List<String>? subjects,
     this.status = 'trial',
     this.trialEndTime,
+    this.trialStartTime,
     this.name,
     this.email,
     this.examInterest,
@@ -35,19 +54,75 @@ class UserModel {
     this.studyHoursPerDay,
     this.targetScore,
     this.createdAt,
+    // Enhanced registration fields
+    this.fullName,
+    this.currentClass,
+    this.schoolType,
+    List<String>? studyFocus,
+    List<String>? scienceSubjects,
+    this.targetExamDate,
+    this.studyHoursPerWeek,
+    List<String>? difficultyAreas,
+    // Registration tracking
+    this.isRegistered = false,
+    this.isVerified = false,
+    this.registrationDate,
+    this.lastLoginDate,
+    this.registrationStatus = 'pending',
   }) : examTypes = examTypes ?? [],
-       subjects = subjects ?? [];
+       subjects = subjects ?? [],
+       studyFocus = studyFocus ?? [],
+       scienceSubjects = scienceSubjects ?? [],
+       difficultyAreas = difficultyAreas ?? [];
 
+  // Trial functionality methods
+  void setTrialStatus(DateTime signupTime) {
+    trialStartTime = signupTime;
+    trialEndTime = signupTime.add(const Duration(hours: 48));
+    status = 'trial';
+  }
+
+  bool get isOnTrial {
+    if (trialStartTime == null || trialEndTime == null) return false;
+    if (isTrialExpired) return false;
+    return true;
+  }
+
+  bool get isTrialExpired {
+    if (trialEndTime == null) return false;
+    return DateTime.now().isAfter(trialEndTime!);
+  }
+
+  DateTime? get trialExpires {
+    return trialEndTime;
+  }
+
+  Duration? get trialTimeRemaining {
+    if (trialEndTime == null) return null;
+    final remaining = trialEndTime!.difference(DateTime.now());
+    if (remaining.isNegative) return null;
+    return remaining;
+  }
+
+  String? get trialDisplayMessage {
+    if (trialStartTime == null || trialEndTime == null) return null;
+    
+    if (isTrialExpired) {
+      return 'Trial expired';
+    }
+    
+    // Format the expiry date and time
+    final expiry = trialEndTime!;
+    final formattedDate = '${expiry.day}/${expiry.month}/${expiry.year}';
+    final formattedTime = '${expiry.hour.toString().padLeft(2, '0')}:${expiry.minute.toString().padLeft(2, '0')}';
+    
+    return 'Free trial ends at $formattedDate $formattedTime';
+  }
+
+  // Legacy methods for backward compatibility
   bool get isTrialActive {
     if (trialEndTime == null) return false;
     return DateTime.now().isBefore(trialEndTime!);
-  }
-
-  String get trialTimeRemaining {
-    if (trialEndTime == null) return '0h';
-    final remaining = trialEndTime!.difference(DateTime.now());
-    if (remaining.isNegative) return '0h';
-    return '${remaining.inHours}h ${remaining.inMinutes % 60}m';
   }
 
   Map<String, dynamic> toJson() {
@@ -62,6 +137,9 @@ class UserModel {
       'subjects': subjects,
       'status': status,
       'trialEndTime': trialEndTime?.toIso8601String(),
+      'trialStartTime': trialStartTime?.toIso8601String(),
+      'isOnTrial': isOnTrial,
+      'trialExpires': trialExpires?.toIso8601String(),
       'name': name,
       'email': email,
       'examInterest': examInterest,
@@ -69,6 +147,21 @@ class UserModel {
       'studyHoursPerDay': studyHoursPerDay,
       'targetScore': targetScore,
       'createdAt': createdAt?.toIso8601String(),
+      // Enhanced registration fields
+      'fullName': fullName,
+      'currentClass': currentClass,
+      'schoolType': schoolType,
+      'studyFocus': studyFocus,
+      'scienceSubjects': scienceSubjects,
+      'targetExamDate': targetExamDate?.toIso8601String(),
+      'studyHoursPerWeek': studyHoursPerWeek,
+      'difficultyAreas': difficultyAreas,
+      // Registration tracking
+      'isRegistered': isRegistered,
+      'isVerified': isVerified,
+      'registrationDate': registrationDate?.toIso8601String(),
+      'lastLoginDate': lastLoginDate?.toIso8601String(),
+      'registrationStatus': registrationStatus,
     };
   }
 
@@ -89,6 +182,11 @@ class UserModel {
       status: json['status'] ?? 'trial',
       trialEndTime: json['trialEndTime'] != null 
           ? DateTime.parse(json['trialEndTime'])
+          : (json['trialExpires'] != null 
+              ? DateTime.parse(json['trialExpires'])
+              : null),
+      trialStartTime: json['trialStartTime'] != null 
+          ? DateTime.parse(json['trialStartTime'])
           : null,
       name: json['name'],
       email: json['email'],
@@ -101,6 +199,33 @@ class UserModel {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
+      // Enhanced registration fields
+      fullName: json['fullName'],
+      currentClass: json['currentClass'],
+      schoolType: json['schoolType'],
+      studyFocus: json['studyFocus'] != null 
+          ? List<String>.from(json['studyFocus'])
+          : [],
+      scienceSubjects: json['scienceSubjects'] != null 
+          ? List<String>.from(json['scienceSubjects'])
+          : [],
+      targetExamDate: json['targetExamDate'] != null
+          ? DateTime.parse(json['targetExamDate'])
+          : null,
+      studyHoursPerWeek: json['studyHoursPerWeek'],
+      difficultyAreas: json['difficultyAreas'] != null 
+          ? List<String>.from(json['difficultyAreas'])
+          : [],
+      // Registration tracking
+      isRegistered: json['isRegistered'] ?? false,
+      isVerified: json['isVerified'] ?? false,
+      registrationDate: json['registrationDate'] != null
+          ? DateTime.parse(json['registrationDate'])
+          : null,
+      lastLoginDate: json['lastLoginDate'] != null
+          ? DateTime.parse(json['lastLoginDate'])
+          : null,
+      registrationStatus: json['registrationStatus'] ?? 'pending',
     );
   }
 }

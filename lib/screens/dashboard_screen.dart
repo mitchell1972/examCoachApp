@@ -130,6 +130,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildTrialBadge() {
+    // Get trial display message
+    final trialMessage = widget.userModel.trialDisplayMessage;
+    final isOnTrial = widget.userModel.isOnTrial;
+    final isExpired = widget.userModel.isTrialExpired;
+    
+    // If no trial data, don't show the badge
+    if (trialMessage == null) {
+      return const SizedBox.shrink();
+    }
+    
+    // Determine colors based on trial status
+    Color badgeColor = Colors.orange;
+    Color iconColor = Colors.orange;
+    IconData icon = Icons.access_time;
+    
+    if (isExpired) {
+      badgeColor = Colors.red;
+      iconColor = Colors.red;
+      icon = Icons.timer_off;
+    } else if (isOnTrial) {
+      badgeColor = Colors.green;
+      iconColor = Colors.green;
+      icon = Icons.access_time;
+    }
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -146,11 +171,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.2),
+              color: iconColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.access_time,
+            child: Icon(
+              icon,
               color: Colors.white,
               size: 28,
             ),
@@ -161,9 +186,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '48h Free Trial',
-                  style: TextStyle(
+                Text(
+                  isExpired ? 'Trial Expired' : '48h Free Trial',
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -171,7 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Time remaining: ${widget.userModel.trialTimeRemaining}',
+                  trialMessage,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withOpacity(0.9),
@@ -184,7 +209,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.orange,
+              color: badgeColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(

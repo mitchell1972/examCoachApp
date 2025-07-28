@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/models/user_model.dart';
+import 'package:exam_coach_app/models/user_model.dart';
 
 void main() {
   group('Multi-Selection Feature Unit Tests', () {
@@ -7,8 +7,13 @@ void main() {
 
     setUp(() {
       testUserModel = UserModel(
+        fullName: 'Test User',
         phoneNumber: '+1234567890',
-        status: 'trial',
+        email: 'test@example.com',
+        currentClass: 'SS3',
+        schoolType: 'Public School',
+        studyFocus: [],
+        scienceSubjects: [],
       );
     });
 

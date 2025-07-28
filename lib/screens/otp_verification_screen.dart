@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
+import '../services/storage_service.dart';
 import '../main.dart'; // Import to access global authService
 import 'exam_selection_screen.dart';
 
@@ -27,6 +28,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   );
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final Logger _logger = Logger();
+  final StorageService _storageService = StorageService();
   bool _isLoading = false;
   String _currentOTP = '';
 
@@ -91,8 +93,17 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         // Update the user model with verified user data
         widget.userModel.id = verifiedUser.id;
         widget.userModel.otpCode = _currentOTP;
+        widget.userModel.isVerified = true;
+        widget.userModel.lastLoginDate = DateTime.now();
+        
+        // Activate trial when signup completes
+        widget.userModel.setTrialStatus(DateTime.now());
+        
+        // Save/update user data in storage
+        await _storageService.updateUser(widget.userModel);
         
         _logger.i('OTP verified successfully for user: ${verifiedUser.id ?? 'unknown'}');
+        _logger.i('Trial activated - expires: ${widget.userModel.trialExpires}');
 
         // Navigate to next screen
         Navigator.pushReplacement(

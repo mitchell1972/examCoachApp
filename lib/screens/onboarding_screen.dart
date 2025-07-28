@@ -1,8 +1,40 @@
 import 'package:flutter/material.dart';
-import 'phone_input_screen.dart';
+import '../services/storage_service.dart';
+import 'registration_screen.dart';
+import 'login_screen.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final _storageService = StorageService();
+  bool _isCheckingRegistration = true;
+  bool _hasRegistration = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRegistrationStatus();
+  }
+
+  Future<void> _checkRegistrationStatus() async {
+    try {
+      final isRegistered = await _storageService.isUserRegistered();
+      setState(() {
+        _hasRegistration = isRegistered;
+        _isCheckingRegistration = false;
+      });
+    } catch (e) {
+      setState(() {
+        _hasRegistration = false;
+        _isCheckingRegistration = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,58 +88,92 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 48),
                 
-                                // Sign Up Button
-                ElevatedButton(
-                  onPressed: () {
-                    // Navigate to phone input screen
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const PhoneInputScreen(),
+                if (_isCheckingRegistration)
+                  const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                else ...[
+                  // Primary Action Button
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => _hasRegistration 
+                              ? const LoginScreen()
+                              : const RegistrationScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.deepPurple,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                                     style: ElevatedButton.styleFrom(
-                     backgroundColor: Colors.white,
-                     foregroundColor: Colors.deepPurple,
-                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      _hasRegistration ? 'Login' : 'Create Account',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                                     child: const Text(
-                     'Sign Up',
-                     style: TextStyle(
-                       fontSize: 18,
-                       fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                                 ),
-                 const SizedBox(height: 16),
-                
-                // Login Button
-                OutlinedButton(
-                  onPressed: () {
-                    // TODO: Navigate to login screen
-                                         ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(content: Text('Login pressed!')),
-                     );
-                  },
-                                     style: OutlinedButton.styleFrom(
-                     foregroundColor: Colors.white,
-                     side: const BorderSide(color: Colors.white, width: 2),
-                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: 16),
+                  
+                  // Secondary Action Button
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => _hasRegistration 
+                              ? const RegistrationScreen()
+                              : const LoginScreen(),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white, width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      _hasRegistration ? 'Create New Account' : 'Already have an account?',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                                     child: const Text(
-                     'Login',
-                     style: TextStyle(
-                       fontSize: 18,
-                       fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                ),
+                  
+                  if (_hasRegistration) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Welcome back! Ready to continue your learning journey?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Join thousands of students preparing for their exams',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ],
               ],
             ),
           ),
