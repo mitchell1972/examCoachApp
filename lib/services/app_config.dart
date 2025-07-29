@@ -83,12 +83,14 @@ class AppConfig extends ChangeNotifier {
   
   /// Determine current environment
   Environment _determineEnvironment() {
-    if (kDebugMode) {
+    // Force development mode for demo purposes
+    // In a real app, you'd use proper environment detection
+    if (kDebugMode || kProfileMode) {
       return Environment.development;
-    } else if (kProfileMode) {
-      return Environment.staging;
     } else {
-      return Environment.production;
+      // For demo purposes, default to development even in release mode
+      // In production, you'd want this to be Environment.production
+      return Environment.development; 
     }
   }
   
