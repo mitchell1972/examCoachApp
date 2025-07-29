@@ -53,6 +53,7 @@ jobs:
       
     - name: Build web app
       run: |
+        # Build for production with real SMS verification (CI=true enables production mode)
         flutter build web --release --web-renderer canvaskit --base-href /examCoachApp/ --dart-define=CI=true
         
     - name: Setup Pages

@@ -83,14 +83,21 @@ class AppConfig extends ChangeNotifier {
   
   /// Determine current environment
   Environment _determineEnvironment() {
-    // Force development mode for demo purposes
-    // In a real app, you'd use proper environment detection
-    if (kDebugMode || kProfileMode) {
+    // Check if running in CI/GitHub Actions (production deployment)
+    const bool isCI = bool.fromEnvironment('CI', defaultValue: false);
+    
+    if (isCI) {
+      // Production deployment (GitHub Actions, Netlify, Vercel, etc.)
+      return Environment.production;
+    } else if (kDebugMode) {
+      // Local development with hot reload
       return Environment.development;
+    } else if (kProfileMode) {
+      // Performance testing
+      return Environment.staging;
     } else {
-      // For demo purposes, default to development even in release mode
-      // In production, you'd want this to be Environment.production
-      return Environment.development; 
+      // Release mode but not CI (local release testing)
+      return Environment.development;
     }
   }
   
