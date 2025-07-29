@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'You need to create an account first before you can login.',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
             ),
             textAlign: TextAlign.center,
           ),
@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'Hello ${_registeredUser!.fullName ?? 'Student'}, ready to continue learning?',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
             ),
             textAlign: TextAlign.center,
           ),
@@ -297,7 +297,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Text(
               'Forgot phone number?',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withOpacity(0.9),
                 fontSize: 16,
                 decoration: TextDecoration.underline,
               ),
@@ -336,10 +336,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.3),
+          color: Colors.white.withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -352,7 +352,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -379,7 +379,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _registeredUser!.phoneNumber ?? '',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                     ),
                   ],
@@ -415,7 +415,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -435,7 +435,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     '+${_registeredUser!.studyFocus.length - 3} more',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                     ),
                   ),
                 ),
@@ -454,7 +454,7 @@ class _LoginScreenState extends State<LoginScreen> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: Colors.white.withOpacity(0.8),
           ),
         ),
         Text(

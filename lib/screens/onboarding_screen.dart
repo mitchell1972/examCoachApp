@@ -82,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   'Get personalized quizzes for your exam preparation',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withValues(alpha: 0.9),
+                    color: Colors.white.withOpacity(0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -158,7 +158,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       'Welcome back! Ready to continue your learning journey?',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -168,7 +168,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       'Join thousands of students preparing for their exams',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                       ),
                       textAlign: TextAlign.center,
                     ),
