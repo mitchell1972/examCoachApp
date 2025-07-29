@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/login_screen.dart';
 import 'services/twilio_auth_service.dart';
 import 'services/app_config.dart';
 // import 'services/supabase_config.dart';  // Disabled due to Firebase conflicts
@@ -71,6 +72,9 @@ class ExamCoachApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const OnboardingScreen(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }

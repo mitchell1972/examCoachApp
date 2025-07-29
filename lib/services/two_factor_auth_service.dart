@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import 'storage_service.dart';
 import 'database_service_rest.dart';
+import 'app_config.dart';
 import '../main.dart';
 
 /// Authentication states
@@ -181,6 +182,28 @@ class TwoFactorAuthService {
       if (registeredUser != null && registeredUser.email == email) {
         _logger.i('✅ User found in local storage by email');
         return registeredUser;
+      }
+      
+      // In development mode, create a demo user automatically
+      if (AppConfig.instance.isDevelopment) {
+        _logger.i('🎭 Demo mode: Creating demo user for email: $email');
+        final demoUser = UserModel(
+          id: 'demo-user-${DateTime.now().millisecondsSinceEpoch}',
+          phoneNumber: '+447940361848', // Demo phone number
+          name: 'Demo User',
+          email: email, // Use the provided email
+          examInterest: 'JAMB',
+          examDate: DateTime.now().add(Duration(days: 90)),
+          studyHoursPerDay: 3,
+          targetScore: '250+',
+          createdAt: DateTime.now(),
+        );
+        
+        // Set demo password that matches what user might enter
+        demoUser.setPassword('Pa%%w0rd1972'); // Demo password
+        
+        _logger.i('✅ Demo user created with email: $email');
+        return demoUser;
       }
       
       _logger.w('❌ No user found with email: $email');

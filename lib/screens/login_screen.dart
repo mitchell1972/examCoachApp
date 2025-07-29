@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import '../services/two_factor_auth_service.dart';
 import '../services/app_config.dart';
 import 'forgot_phone_screen.dart';
+import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -144,7 +145,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           _logger.i('🎉 Login successful for: ${user.email}');
           
           // Navigate to main app
-          Navigator.of(context).pushReplacementNamed('/dashboard');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => DashboardScreen(userModel: user),
+            ),
+          );
         }
       } else {
         setState(() {
