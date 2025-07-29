@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import '../models/user_model.dart';
 import '../services/two_factor_auth_service.dart';
-import '../main.dart';
 import 'forgot_phone_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -172,26 +170,32 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     try {
       final success = await _twoFactorAuth.sendSmsOtp();
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification code sent successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to resend verification code. Please try again.';
-        });
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Verification code sent successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          setState(() {
+            _errorMessage = 'Failed to resend verification code. Please try again.';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to resend code. Please try again.';
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Failed to resend code. Please try again.';
+        });
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
