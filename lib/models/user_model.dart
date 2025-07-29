@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
+
 class UserModel {
   String? id; // User ID from authentication service
   String? phoneNumber;
@@ -27,6 +31,10 @@ class UserModel {
   DateTime? targetExamDate;
   int? studyHoursPerWeek;
   List<String> difficultyAreas;
+  
+  // Password authentication
+  String? _passwordHash; // Private: Hashed password storage
+  String? passwordSalt; // Salt for password hashing
   
   // Registration tracking
   bool isRegistered;
@@ -63,6 +71,9 @@ class UserModel {
     this.targetExamDate,
     this.studyHoursPerWeek,
     List<String>? difficultyAreas,
+    // Password authentication
+    String? passwordHash,
+    this.passwordSalt,
     // Registration tracking
     this.isRegistered = false,
     this.isVerified = false,
@@ -73,7 +84,48 @@ class UserModel {
        subjects = subjects ?? [],
        studyFocus = studyFocus ?? [],
        scienceSubjects = scienceSubjects ?? [],
-       difficultyAreas = difficultyAreas ?? [];
+       difficultyAreas = difficultyAreas ?? [],
+       _passwordHash = passwordHash;
+
+  // Password management methods
+  void setPassword(String password) {
+    if (password.isEmpty) {
+      _passwordHash = null;
+      passwordSalt = null;
+      return;
+    }
+    
+    // Generate a random salt
+    passwordSalt = _generateSalt();
+    // Hash the password with salt
+    _passwordHash = _hashPassword(password, passwordSalt!);
+  }
+  
+  bool verifyPassword(String password) {
+    if (_passwordHash == null || passwordSalt == null) {
+      return false;
+    }
+    
+    final hashedInput = _hashPassword(password, passwordSalt!);
+    return hashedInput == _passwordHash;
+  }
+  
+  bool get hasPassword {
+    return _passwordHash != null && _passwordHash!.isNotEmpty;
+  }
+  
+  // Private helper methods
+  String _generateSalt() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(32, (i) => random.nextInt(256));
+    return base64.encode(bytes);
+  }
+  
+  String _hashPassword(String password, String salt) {
+    final bytes = utf8.encode(password + salt);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
   // Trial functionality methods
   void setTrialStatus(DateTime signupTime) {
@@ -161,6 +213,10 @@ class UserModel {
       'targetExamDate': targetExamDate?.toIso8601String(),
       'studyHoursPerWeek': studyHoursPerWeek,
       'difficultyAreas': difficultyAreas,
+      // Password authentication
+      '_passwordHash': _passwordHash,
+      'passwordSalt': passwordSalt,
+      'hasPassword': hasPassword,
       // Registration tracking
       'isRegistered': isRegistered,
       'isVerified': isVerified,
@@ -221,6 +277,9 @@ class UserModel {
       difficultyAreas: json['difficultyAreas'] != null 
           ? List<String>.from(json['difficultyAreas'])
           : [],
+      // Password authentication
+      passwordHash: json['_passwordHash'],
+      passwordSalt: json['passwordSalt'],
       // Registration tracking
       isRegistered: json['isRegistered'] ?? false,
       isVerified: json['isVerified'] ?? false,

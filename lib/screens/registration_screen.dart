@@ -24,6 +24,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   
   // Form data
   String? _currentClass;
@@ -68,6 +70,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _fullNameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -115,7 +119,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       final user = UserModel(
         fullName: _fullNameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+        email: _emailController.text.trim(),
         currentClass: _currentClass,
         schoolType: _schoolType,
         studyFocus: _studyFocus,
@@ -127,6 +131,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         registrationStatus: 'completed',
         status: 'registered',
       );
+      
+      // Set the password securely
+      user.setPassword(_passwordController.text);
 
       await _storageService.saveRegistration(user);
       
@@ -202,12 +209,51 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return null; // Email is optional
+      return 'Email address is required';
     }
     
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
     if (!emailRegex.hasMatch(value)) {
       return 'Please enter a valid email address';
+    }
+    
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    
+    // Check for at least one uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    
+    // Check for at least one lowercase letter
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    
+    // Check for at least one digit
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    }
+    
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    
+    if (value != _passwordController.text) {
+      return 'Passwords do not match';
     }
     
     return null;
@@ -341,11 +387,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           
           _buildTextField(
             controller: _emailController,
-            label: 'Email Address (Optional)',
+            label: 'Email Address',
             icon: Icons.email,
             hint: 'your.email@example.com',
             keyboardType: TextInputType.emailAddress,
             validator: _validateEmail,
+            required: true,
+          ),
+          const SizedBox(height: 20),
+          
+          _buildTextField(
+            controller: _passwordController,
+            label: 'Password',
+            icon: Icons.lock,
+            hint: 'Enter a secure password',
+            obscureText: true,
+            validator: _validatePassword,
+            required: true,
+          ),
+          const SizedBox(height: 20),
+          
+          _buildTextField(
+            controller: _confirmPasswordController,
+            label: 'Confirm Password',
+            icon: Icons.lock_outline,
+            hint: 'Confirm your password',
+            obscureText: true,
+            validator: _validateConfirmPassword,
+            required: true,
           ),
         ],
       ),
@@ -499,11 +568,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
     bool required = false,
+    bool obscureText = false,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
+      obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: required ? '$label *' : label,

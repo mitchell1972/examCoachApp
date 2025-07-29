@@ -124,6 +124,33 @@ class DatabaseServiceRest {
     }
   }
 
+  /// Get user by email address
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_supabaseUrl/rest/v1/users?email=eq.$email'),
+        headers: _headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> users = jsonDecode(response.body);
+        if (users.isNotEmpty) {
+          _logger.i('✅ User found in database by email');
+          return UserModel.fromJson(users.first);
+        } else {
+          _logger.i('ℹ️ No user found with email: $email');
+          return null;
+        }
+      } else {
+        _logger.e('❌ Failed to get user by email: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      _logger.e('❌ Database error getting user by email: $e');
+      return null;
+    }
+  }
+
   /// Get user by phone number
   Future<UserModel?> getUserByPhone(String phoneNumber) async {
     try {
