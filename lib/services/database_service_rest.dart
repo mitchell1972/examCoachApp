@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
@@ -17,7 +16,7 @@ class DatabaseServiceRest {
   // Supabase configuration
   String get _supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
   String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
-  String get _supabaseServiceKey => dotenv.env['SUPABASE_SERVICE_ROLE_KEY'] ?? '';
+
 
   // HTTP headers for API calls
   Map<String, String> get _headers => {
@@ -26,11 +25,7 @@ class DatabaseServiceRest {
     'Authorization': 'Bearer $_supabaseAnonKey',
   };
 
-  Map<String, String> get _adminHeaders => {
-    'Content-Type': 'application/json',
-    'apikey': _supabaseServiceKey,
-    'Authorization': 'Bearer $_supabaseServiceKey',
-  };
+
 
   /// Create a new user in the database
   Future<UserModel?> createUser({
