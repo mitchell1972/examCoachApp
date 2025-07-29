@@ -88,7 +88,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -116,7 +116,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                   'If you can\'t remember the phone number you used to register, you can clear your current registration and create a new account with a different number.',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
@@ -127,10 +127,10 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
+                    color: Colors.orange.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.orange.withOpacity(0.5),
+                      color: Colors.orange.withValues(alpha: 0.5),
                       width: 1,
                     ),
                   ),
@@ -159,7 +159,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                               'This will permanently delete your current registration data. You will need to register again.',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                               ),
                             ),
                           ],
@@ -229,10 +229,10 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -252,7 +252,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                         'If you remember your phone number but are having trouble logging in, try going back and checking your number format. Make sure to include the country code (e.g., +234).',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           height: 1.4,
                         ),
                       ),
@@ -286,7 +286,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
           content: Text(
             'Are you sure you want to clear your current registration data? This action cannot be undone.',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 16,
             ),
           ),
@@ -298,7 +298,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 16,
                 ),
               ),

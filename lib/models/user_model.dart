@@ -97,6 +97,11 @@ class UserModel {
     return trialEndTime;
   }
 
+  // Backward compatibility getter for tests
+  DateTime? get trialStartDate {
+    return trialStartTime;
+  }
+
   Duration? get trialTimeRemaining {
     if (trialEndTime == null) return null;
     final remaining = trialEndTime!.difference(DateTime.now());

@@ -242,7 +242,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   'Enter the 6-digit code sent to ${widget.userModel.phoneNumber}',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -256,12 +256,12 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                       width: 50,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: _focusNodes[index].hasFocus
                               ? Colors.white
-                              : Colors.white.withOpacity(0.3),
+                              : Colors.white.withValues(alpha: 0.3),
                           width: 2,
                         ),
                       ),
@@ -284,7 +284,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               width: 2,
                             ),
                           ),
@@ -296,7 +296,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                             ),
                           ),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.1),
+                          fillColor: Colors.white.withValues(alpha: 0.1),
                         ),
                         onChanged: (value) => _onOTPChanged(value, index),
                       ),
@@ -341,7 +341,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   child: Text(
                     'Didn\'t receive code? Resend',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 16,
                     ),
                   ),

@@ -16,7 +16,7 @@ dependencies:
   # Logging
   logger: ^2.4.0
   
-  # HTTP Requests
+  # HTTP Requests & Database API
   http: ^1.2.2
   
   # Environment Configuration
@@ -24,6 +24,18 @@ dependencies:
 
   # Secure Storage
   flutter_secure_storage: ^9.2.2
+  
+  # Database & Authentication (Firebase-free approach)
+  # supabase_flutter: ^2.9.1  # Temporarily removed due to Firebase conflicts
+  
+  # JWT for authentication tokens
+  dart_jsonwebtoken: ^2.12.2
+  
+  # Password Hashing
+  crypto: ^3.0.3
+  
+  # UUID Generation
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:

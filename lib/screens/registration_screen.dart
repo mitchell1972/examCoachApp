@@ -285,7 +285,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               margin: EdgeInsets.only(right: index < _totalSteps - 1 ? 8 : 0),
               height: 4,
               decoration: BoxDecoration(
-                color: isActive ? Colors.white : Colors.white.withOpacity(0.3),
+                color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -314,7 +314,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             'Let\'s start with your basic details',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 32),
@@ -371,7 +371,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             'Tell us about your current academic level',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 32),
@@ -426,7 +426,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             'Which science subjects are you interested in?',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 32),
@@ -464,7 +464,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             'Help us personalize your learning experience',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
           const SizedBox(height: 32),
@@ -508,12 +508,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       decoration: InputDecoration(
         labelText: required ? '$label *' : label,
         hintText: hint,
-        prefixIcon: Icon(icon, color: Colors.white.withOpacity(0.7)),
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+        prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.7)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
+        hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -528,7 +528,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.white.withValues(alpha: 0.1),
       ),
     );
   }
@@ -548,10 +548,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       dropdownColor: Colors.deepPurple.shade600,
       decoration: InputDecoration(
         labelText: required ? '$label *' : label,
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -566,7 +566,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
         filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
+        fillColor: Colors.white.withValues(alpha: 0.1),
       ),
       items: items.map((item) {
         return DropdownMenuItem<String>(
@@ -602,7 +602,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           subtitle,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
         const SizedBox(height: 16),
@@ -631,13 +631,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: isSelected 
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.white.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected 
                           ? Colors.white
-                          : Colors.white.withOpacity(0.3),
+                          : Colors.white.withValues(alpha: 0.3),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -711,9 +711,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -776,15 +776,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
               Icon(
                 Icons.calendar_today,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -794,7 +794,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     Text(
                       label,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 12,
                       ),
                     ),
@@ -804,7 +804,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ? '${value.day}/${value.month}/${value.year}'
                           : 'Select date',
                       style: TextStyle(
-                        color: value != null ? Colors.white : Colors.white.withOpacity(0.5),
+                        color: value != null ? Colors.white : Colors.white.withValues(alpha: 0.5),
                         fontSize: 16,
                       ),
                     ),
@@ -828,9 +828,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -838,7 +838,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 12,
             ),
           ),
@@ -852,7 +852,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 icon: const Icon(Icons.remove),
                 color: Colors.white,
                 style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
+                  backgroundColor: Colors.white.withValues(alpha: 0.1),
                 ),
               ),
               Expanded(
@@ -860,7 +860,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   value?.toString() ?? 'Not set',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: value != null ? Colors.white : Colors.white.withOpacity(0.5),
+                    color: value != null ? Colors.white : Colors.white.withValues(alpha: 0.5),
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -873,7 +873,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 icon: const Icon(Icons.add),
                 color: Colors.white,
                 style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.1),
+                  backgroundColor: Colors.white.withValues(alpha: 0.1),
                 ),
               ),
             ],
@@ -892,7 +892,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           onChanged: (value) => setState(() => _acceptedTerms = value ?? false),
           activeColor: Colors.white,
           checkColor: Colors.deepPurple,
-          side: BorderSide(color: Colors.white.withOpacity(0.7)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.7)),
         ),
         Expanded(
           child: GestureDetector(
@@ -902,7 +902,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               child: RichText(
                 text: TextSpan(
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     fontSize: 14,
                   ),
                   children: [
