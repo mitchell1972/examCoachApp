@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../services/two_factor_auth_service.dart';
+import '../services/app_config.dart';
 import 'forgot_phone_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -530,6 +531,50 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
             ),
             const SizedBox(height: 24),
+            
+            // Demo Code Hint (only in development)
+            if (AppConfig.instance.isDevelopment)
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withOpacity(0.5)),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.developer_mode,
+                          color: Colors.white.withOpacity(0.8),
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Demo Mode',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Use any demo code: 123456, 000000, 111111, 555555',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             
             // Error Message
             if (_errorMessage != null)

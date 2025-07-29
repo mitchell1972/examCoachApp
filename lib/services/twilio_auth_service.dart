@@ -69,10 +69,13 @@ class TwilioAuthService implements AuthService {
       _logger.i('Verifying OTP for $phoneNumber');
       
       if (_isDemoMode) {
-        _logger.i('🔐 Demo mode: Verifying OTP');
+        _logger.i('🔐 Demo mode: Verifying OTP code: $code');
         await Future.delayed(const Duration(seconds: 1));
         
-        if (code == '123456') {
+        // Accept multiple demo codes for better user experience
+        final validDemoCodes = ['123456', '000000', '111111', '555555'];
+        
+        if (validDemoCodes.contains(code)) {
           final userId = 'demo-user-${DateTime.now().millisecondsSinceEpoch}';
           _currentUser = UserModel(
             id: userId,
@@ -85,11 +88,12 @@ class TwilioAuthService implements AuthService {
             targetScore: '',
             createdAt: DateTime.now(),
           );
-          _logger.i('✅ Demo OTP verified successfully');
+          _logger.i('✅ Demo OTP verified successfully with code: $code');
           return _currentUser;
         } else {
-          _logger.w('❌ Demo OTP verification failed: incorrect code');
-          throw Exception('Invalid verification code');
+          _logger.w('❌ Demo OTP verification failed. Code entered: $code');
+          _logger.w('💡 Valid demo codes: ${validDemoCodes.join(", ")}');
+          throw Exception('Invalid verification code. Demo codes: ${validDemoCodes.join(", ")}');
         }
       }
       
@@ -140,12 +144,14 @@ class TwilioAuthService implements AuthService {
 class DemoAuthService extends TwilioAuthService {
   DemoAuthService() : super(isDemoMode: true) {
     _logger.i('🎭 Development: Using Demo Authentication...');
-    _logger.i('ℹ️  NO REAL SMS WILL BE SENT - Use demo code: 123456');
+    _logger.i('ℹ️  NO REAL SMS WILL BE SENT');
+    _logger.i('📋 Valid demo codes: 123456, 000000, 111111, 555555');
   }
   
   @override
   Future<void> sendOTP(String phoneNumber) async {
     _logger.i('📱 Demo mode: Simulating OTP send to ${_maskPhoneNumber(phoneNumber)}');
+    _logger.i('💡 Use any of these demo codes: 123456, 000000, 111111, 555555');
     await super.sendOTP(phoneNumber);
   }
   
