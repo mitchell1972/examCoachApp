@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../services/storage_service.dart';
 import '../main.dart'; // Import to access global authService
-import 'exam_selection_screen.dart';
+import 'dashboard_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final UserModel userModel;
@@ -98,18 +98,34 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         // Activate trial when signup completes
         widget.userModel.setTrialStatus(DateTime.now());
         
+        // Map registration data to dashboard-expected fields
+        // Map studyFocus to examTypes for dashboard display
+        widget.userModel.examTypes = List<String>.from(widget.userModel.studyFocus);
+        // Map scienceSubjects to subjects for dashboard display
+        widget.userModel.subjects = List<String>.from(widget.userModel.scienceSubjects);
+        
+        // Set legacy fields for backward compatibility
+        if (widget.userModel.examTypes.isNotEmpty) {
+          widget.userModel.examType = widget.userModel.examTypes.first;
+        }
+        if (widget.userModel.subjects.isNotEmpty) {
+          widget.userModel.subject = widget.userModel.subjects.first;
+        }
+        
         // Save/update user data in storage
         await _storageService.updateUser(widget.userModel);
         
         _logger.i('OTP verified successfully for user: ${verifiedUser.id ?? 'unknown'}');
         _logger.i('Trial activated - expires: ${widget.userModel.trialExpires}');
+        _logger.i('Exam types: ${widget.userModel.examTypes}');
+        _logger.i('Subjects: ${widget.userModel.subjects}');
 
-        // Navigate to next screen
+        // Navigate directly to dashboard (skip exam selection)
         if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ExamSelectionScreen(userModel: widget.userModel),
+              builder: (context) => DashboardScreen(userModel: widget.userModel),
             ),
           );
         }
