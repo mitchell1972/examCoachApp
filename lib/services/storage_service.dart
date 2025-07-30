@@ -21,12 +21,12 @@ class StorageService {
     try {
       _logger.i('🔍 Checking for duplicate user with phone: $phoneNumber');
       
-      // Validate phone number format first
+      // Validate phone number format first - phone number is ALWAYS required for registration
       if (phoneNumber.trim().isEmpty) {
         return 'Phone number is required';
       }
       
-      // Check for existing user by phone number - this is the priority check
+      // Check for existing user by phone number
       final existingUserByPhone = await _databaseService.getUserByPhone(phoneNumber);
       if (existingUserByPhone != null) {
         _logger.w('⚠️ User already exists with phone number: $phoneNumber');

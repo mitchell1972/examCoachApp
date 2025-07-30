@@ -191,7 +191,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return 'Phone number is required';
     }
     
-    // Remove spaces and special characters
+    // Remove spaces and special characters (keep only digits and +)
     final cleanPhone = value.replaceAll(RegExp(r'[^\d+]'), '');
     
     // Check if it starts with country code
