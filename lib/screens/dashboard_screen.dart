@@ -15,16 +15,40 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String _getExamDisplayText() {
+    // Prioritize studyFocus as the primary exam types
+    if (widget.userModel.studyFocus.isNotEmpty) {
+      String examTypes = widget.userModel.studyFocus.join(' & ');
+      // Add current class info if available
+      if (widget.userModel.currentClass != null && widget.userModel.currentClass != 'Other') {
+        examTypes += ' (${widget.userModel.currentClass})';
+      }
+      return examTypes;
+    }
+    
+    // Fall back to examTypes if available
     if (widget.userModel.examTypes.isNotEmpty) {
       return widget.userModel.examTypes.join(' & ');
     }
+    
+    // Fall back to currentClass if available
+    if (widget.userModel.currentClass != null) {
+      return widget.userModel.currentClass!;
+    }
+    
     return widget.userModel.examType ?? 'N/A';
   }
 
   String _getSubjectDisplayText() {
+    // Prioritize scienceSubjects as the primary subjects
+    if (widget.userModel.scienceSubjects.isNotEmpty) {
+      return widget.userModel.scienceSubjects.join(' & ');
+    }
+    
+    // Fall back to subjects if available
     if (widget.userModel.subjects.isNotEmpty) {
       return widget.userModel.subjects.join(' & ');
     }
+    
     return widget.userModel.subject ?? 'N/A';
   }
 
@@ -255,6 +279,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _buildInfoRow('Exam Type', _getExamDisplayText()),
           const SizedBox(height: 8),
           _buildInfoRow('Subject', _getSubjectDisplayText()),
+          const SizedBox(height: 8),
+          _buildInfoRow('School Type', widget.userModel.schoolType ?? 'N/A'),
           const SizedBox(height: 8),
           _buildInfoRow('Status', widget.userModel.status),
         ],
