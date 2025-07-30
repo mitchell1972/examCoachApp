@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import '../services/two_factor_auth_service.dart';
 import '../services/app_config.dart';
+import '../services/navigation_guard_service.dart';
 import 'forgot_phone_screen.dart';
-import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
   final _logger = Logger();
   final _twoFactorAuth = TwoFactorAuthService();
+  final _navigationGuard = NavigationGuardService();
   
   // Form controllers
   final _emailController = TextEditingController();
@@ -144,12 +145,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         if (user != null && mounted) {
           _logger.i('🎉 Login successful for: ${user.email}');
           
-          // Navigate to main app
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => DashboardScreen(userModel: user),
-            ),
-          );
+          // Navigate based on user access status (trial/subscription)
+          _navigationGuard.navigateBasedOnAccess(context, user);
         }
       } else {
         setState(() {
@@ -269,13 +266,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   Widget _buildEmailPasswordForm() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - 48,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // App Logo/Title
             const Icon(
@@ -446,6 +447,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
             ),
           ],
+          ),
         ),
       ),
     );
@@ -459,11 +461,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
     return Container(
       color: Colors.deepPurple.shade700,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0), // Reduced padding from 24 to 20
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                        MediaQuery.of(context).padding.top - 
+                        MediaQuery.of(context).padding.bottom - 40,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Back Button
             Align(
@@ -642,6 +651,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             
             const Spacer(),
           ],
+            ),
+          ),
         ),
       ),
     );

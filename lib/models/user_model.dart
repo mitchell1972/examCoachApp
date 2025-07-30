@@ -14,6 +14,14 @@ class UserModel {
   String status;
   DateTime? trialEndTime;
   DateTime? trialStartTime; // New: Track when trial started
+  String subscriptionStatus; // 'none', 'active', 'expired', 'cancelled'
+  DateTime? subscriptionEndTime;
+  
+  // Payment tracking
+  DateTime? paidUntil; // When the subscription expires
+  String? paymentReference; // Paystack payment reference
+  int? amountPaid; // Amount paid in kobo
+  DateTime? lastPaymentDate; // When the last payment was made
   String? name;
   String? email;
   String? examInterest;
@@ -55,6 +63,8 @@ class UserModel {
     this.status = 'trial',
     this.trialEndTime,
     this.trialStartTime,
+    this.subscriptionStatus = 'none',
+    this.subscriptionEndTime,
     this.name,
     this.email,
     this.examInterest,
@@ -80,6 +90,11 @@ class UserModel {
     this.registrationDate,
     this.lastLoginDate,
     this.registrationStatus = 'pending',
+    // Payment tracking
+    this.paidUntil,
+    this.paymentReference,
+    this.amountPaid,
+    this.lastPaymentDate,
   }) : examTypes = examTypes ?? [],
        subjects = subjects ?? [],
        studyFocus = studyFocus ?? [],
@@ -182,6 +197,70 @@ class UserModel {
     return DateTime.now().isBefore(trialEndTime!);
   }
 
+  // Subscription management methods
+  bool get hasActiveSubscription {
+    // Check both old and new subscription fields for backward compatibility
+    final endTime = paidUntil ?? subscriptionEndTime;
+    return subscriptionStatus == 'active' && 
+           endTime != null && 
+           DateTime.now().isBefore(endTime);
+  }
+
+  bool get hasAccessToContent {
+    return isOnTrial || hasActiveSubscription;
+  }
+
+  bool get needsSubscription {
+    return isTrialExpired && !hasActiveSubscription;
+  }
+
+  void activateSubscription(Duration duration) {
+    subscriptionStatus = 'active';
+    subscriptionEndTime = DateTime.now().add(duration);
+    status = 'subscribed';
+  }
+
+  void cancelSubscription() {
+    subscriptionStatus = 'cancelled';
+    status = 'trial_ended';
+  }
+
+  /// Activate subscription from Paystack payment
+  /// Following the scenario: paidUntil = paymentTime + 7 days, status = 'paid'
+  void activatePaystackSubscription({
+    required DateTime paymentTime,
+    required String paymentReference,
+    required int amountPaid,
+  }) {
+    // Set payment fields
+    this.lastPaymentDate = paymentTime;
+    this.paidUntil = paymentTime.add(const Duration(days: 7));
+    this.paymentReference = paymentReference;
+    this.amountPaid = amountPaid;
+    
+    // Update subscription status
+    subscriptionStatus = 'active';
+    status = 'paid';
+    
+    // Also update the legacy field for backward compatibility
+    subscriptionEndTime = paidUntil;
+  }
+
+  String get accessStatusMessage {
+    if (hasActiveSubscription) {
+      final endTime = paidUntil ?? subscriptionEndTime!;
+      final daysRemaining = endTime.difference(DateTime.now()).inDays;
+      final formattedDate = '${endTime.day}/${endTime.month}/${endTime.year}';
+      return 'Subscription active until $formattedDate';
+    } else if (isOnTrial) {
+      return trialDisplayMessage ?? 'Trial active';
+    } else if (isTrialExpired) {
+      return 'Trial expired - Subscribe to continue';
+    } else {
+      return 'No active subscription';
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -195,8 +274,13 @@ class UserModel {
       'status': status,
       'trialEndTime': trialEndTime?.toIso8601String(),
       'trialStartTime': trialStartTime?.toIso8601String(),
+      'subscriptionStatus': subscriptionStatus,
+      'subscriptionEndTime': subscriptionEndTime?.toIso8601String(),
       'isOnTrial': isOnTrial,
       'trialExpires': trialExpires?.toIso8601String(),
+      'hasActiveSubscription': hasActiveSubscription,
+      'hasAccessToContent': hasAccessToContent,
+      'needsSubscription': needsSubscription,
       'name': name,
       'email': email,
       'examInterest': examInterest,
@@ -223,6 +307,11 @@ class UserModel {
       'registrationDate': registrationDate?.toIso8601String(),
       'lastLoginDate': lastLoginDate?.toIso8601String(),
       'registrationStatus': registrationStatus,
+      // Payment tracking
+      'paidUntil': paidUntil?.toIso8601String(),
+      'paymentReference': paymentReference,
+      'amountPaid': amountPaid,
+      'lastPaymentDate': lastPaymentDate?.toIso8601String(),
     };
   }
 
@@ -248,6 +337,10 @@ class UserModel {
               : null),
       trialStartTime: json['trialStartTime'] != null 
           ? DateTime.parse(json['trialStartTime'])
+          : null,
+      subscriptionStatus: json['subscriptionStatus'] ?? 'none',
+      subscriptionEndTime: json['subscriptionEndTime'] != null 
+          ? DateTime.parse(json['subscriptionEndTime'])
           : null,
       name: json['name'],
       email: json['email'],
@@ -290,6 +383,15 @@ class UserModel {
           ? DateTime.parse(json['lastLoginDate'])
           : null,
       registrationStatus: json['registrationStatus'] ?? 'pending',
+      // Payment tracking
+      paidUntil: json['paidUntil'] != null
+          ? DateTime.parse(json['paidUntil'])
+          : null,
+      paymentReference: json['paymentReference'],
+      amountPaid: json['amountPaid'],
+      lastPaymentDate: json['lastPaymentDate'] != null
+          ? DateTime.parse(json['lastPaymentDate'])
+          : null,
     );
   }
 }

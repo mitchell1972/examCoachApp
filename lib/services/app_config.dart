@@ -83,20 +83,38 @@ class AppConfig extends ChangeNotifier {
   
   /// Determine current environment
   Environment _determineEnvironment() {
-    // Check if running in CI/GitHub Actions (production deployment)
+    // Check multiple environment indicators
     const bool isCI = bool.fromEnvironment('CI', defaultValue: false);
+    const bool isGitHubActions = bool.fromEnvironment('GITHUB_ACTIONS', defaultValue: false);
+    const bool isProduction = bool.fromEnvironment('FLUTTER_ENV', defaultValue: false);
+    const String nodeEnv = String.fromEnvironment('NODE_ENV', defaultValue: '');
     
-    if (isCI) {
+    // Log environment detection for debugging
+    final logger = Logger();
+    logger.i('🔍 Environment Detection:');
+    logger.i('  CI: $isCI');
+    logger.i('  GITHUB_ACTIONS: $isGitHubActions');
+    logger.i('  FLUTTER_ENV: $isProduction');
+    logger.i('  NODE_ENV: $nodeEnv');
+    logger.i('  kDebugMode: $kDebugMode');
+    logger.i('  kProfileMode: $kProfileMode');
+    logger.i('  kReleaseMode: $kReleaseMode');
+    
+    if (isCI || isGitHubActions || nodeEnv == 'production') {
       // Production deployment (GitHub Actions, Netlify, Vercel, etc.)
+      logger.i('🚀 Environment: PRODUCTION (Real SMS enabled)');
       return Environment.production;
     } else if (kDebugMode) {
       // Local development with hot reload
+      logger.i('🎭 Environment: DEVELOPMENT (Demo mode)');
       return Environment.development;
     } else if (kProfileMode) {
       // Performance testing
+      logger.i('📊 Environment: STAGING (Profile mode)');
       return Environment.staging;
     } else {
       // Release mode but not CI (local release testing)
+      logger.i('🎭 Environment: DEVELOPMENT (Local release)');
       return Environment.development;
     }
   }

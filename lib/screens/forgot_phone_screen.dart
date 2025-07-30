@@ -77,11 +77,15 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - 48,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Icon
                 Container(
@@ -260,6 +264,7 @@ class _ForgotPhoneScreenState extends State<ForgotPhoneScreen> {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         ),

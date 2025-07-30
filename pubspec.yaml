@@ -36,6 +36,9 @@ dependencies:
   
   # UUID Generation
   uuid: ^4.4.0
+  
+  # URL Launcher for payment pages
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_test:

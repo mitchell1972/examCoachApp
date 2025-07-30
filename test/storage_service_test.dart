@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:exam_coach_app/services/storage_service.dart';
+import 'package:exam_coach_app/services/app_config.dart';
 import 'package:exam_coach_app/models/user_model.dart';
 
 void main() {
@@ -8,17 +10,55 @@ void main() {
   group('Storage Service Tests', () {
     late StorageService storageService;
 
-    setUp(() {
+    setUp(() async {
       storageService = StorageService();
+      
+      // Initialize AppConfig for tests
+      await AppConfig.initialize();
+      
+      // Create a simple in-memory storage for tests
+      final Map<String, String> testStorage = {};
+      
+      // Mock flutter_secure_storage for testing
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+        (MethodCall methodCall) async {
+          switch (methodCall.method) {
+            case 'read':
+              final key = methodCall.arguments['key'] as String;
+              return testStorage[key];
+            case 'write':
+              final key = methodCall.arguments['key'] as String;
+              final value = methodCall.arguments['value'] as String;
+              testStorage[key] = value;
+              return null;
+            case 'delete':
+              final key = methodCall.arguments['key'] as String;
+              testStorage.remove(key);
+              return null;
+            case 'deleteAll':
+              testStorage.clear();
+              return null;
+            case 'readAll':
+              return Map<String, String>.from(testStorage);
+            default:
+              throw PlatformException(
+                code: 'Unimplemented',
+                details: 'Method ${methodCall.method} not implemented in mock',
+              );
+          }
+        },
+      );
     });
 
     tearDown(() async {
-      // Clean up after each test
-      try {
-        await storageService.clearRegistration();
-      } catch (e) {
-        // Ignore cleanup errors in tests
-      }
+      // Reset the mock after each test
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        const MethodChannel('plugins.it_nomads.com/flutter_secure_storage'),
+        null,
+      );
     });
 
     group('User Registration Storage', () {

@@ -23,6 +23,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    env:
+      CI: true
+      GITHUB_ACTIONS: true
+      NODE_ENV: production
+      FLUTTER_ENV: production
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -53,8 +59,13 @@ jobs:
       
     - name: Build web app
       run: |
-        # Build for production with real SMS verification (CI=true enables production mode)
-        flutter build web --release --web-renderer canvaskit --base-href /examCoachApp/ --dart-define=CI=true
+        # Build for production with real SMS verification
+        # Multiple environment flags ensure production mode detection
+        flutter build web --release --web-renderer canvaskit --base-href /examCoachApp/ \
+          --dart-define=CI=true \
+          --dart-define=GITHUB_ACTIONS=true \
+          --dart-define=NODE_ENV=production \
+          --dart-define=FLUTTER_ENV=production
         
     - name: Setup Pages
       uses: actions/configure-pages@v5

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
 import '../services/storage_service.dart';
+import '../services/navigation_guard_service.dart';
 import '../main.dart'; // Import to access global authService
 import 'dashboard_screen.dart';
 
@@ -28,6 +29,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final Logger _logger = Logger();
   final StorageService _storageService = StorageService();
+  final NavigationGuardService _navigationGuard = NavigationGuardService();
   bool _isLoading = false;
   String _currentOTP = '';
 
@@ -120,14 +122,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         _logger.i('Exam types: ${widget.userModel.examTypes}');
         _logger.i('Subjects: ${widget.userModel.subjects}');
 
-        // Navigate directly to dashboard (skip exam selection)
+        // Navigate based on user access status (trial/subscription)
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DashboardScreen(userModel: widget.userModel),
-            ),
-          );
+          _navigationGuard.navigateBasedOnAccess(context, widget.userModel);
         }
       }
     } catch (error) {
