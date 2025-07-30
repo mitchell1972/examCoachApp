@@ -1,4 +1,4 @@
-/// Models for payment and subscription management
+// Models for payment and subscription management
 
 /// Payment initialization response from Paystack
 class PaymentInitialization {

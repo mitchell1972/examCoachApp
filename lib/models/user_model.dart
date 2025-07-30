@@ -233,10 +233,10 @@ class UserModel {
     required int amountPaid,
   }) {
     // Set payment fields
-    this.lastPaymentDate = paymentTime;
-    this.paidUntil = paymentTime.add(const Duration(days: 7));
-    this.paymentReference = paymentReference;
-    this.amountPaid = amountPaid;
+    lastPaymentDate = paymentTime;
+    paidUntil = paymentTime.add(const Duration(days: 7));
+    paymentReference = paymentReference;
+    amountPaid = amountPaid;
     
     // Update subscription status
     subscriptionStatus = 'active';
@@ -249,7 +249,6 @@ class UserModel {
   String get accessStatusMessage {
     if (hasActiveSubscription) {
       final endTime = paidUntil ?? subscriptionEndTime!;
-      final daysRemaining = endTime.difference(DateTime.now()).inDays;
       final formattedDate = '${endTime.day}/${endTime.month}/${endTime.year}';
       return 'Subscription active until $formattedDate';
     } else if (isOnTrial) {

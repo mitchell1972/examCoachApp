@@ -5,7 +5,6 @@ import '../models/user_model.dart';
 import '../services/storage_service.dart';
 import '../services/navigation_guard_service.dart';
 import '../main.dart'; // Import to access global authService
-import 'dashboard_screen.dart';
 
 class OTPVerificationScreen extends StatefulWidget {
   final UserModel userModel;

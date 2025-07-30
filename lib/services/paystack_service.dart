@@ -15,7 +15,7 @@ class PaystackService {
   
   // Paystack API configuration
   static const String _baseUrl = 'https://api.paystack.co';
-  static const String _publicKey = 'pk_test_your_public_key_here'; // Replace with actual key
+  // static const String _publicKey = 'pk_test_your_public_key_here'; // For future client-side operations
   static const String _secretKey = 'sk_test_your_secret_key_here'; // Replace with actual key
   
   /// Initialize a payment transaction
