@@ -116,6 +116,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
 
     try {
+      // Run async validations for phone and email before proceeding
+      _logger.i('🔍 Running duplicate user validation...');
+      
+      final phoneValidation = await _validatePhoneAsync(_phoneController.text.trim());
+      if (phoneValidation != null) {
+        throw Exception(phoneValidation);
+      }
+      
+      final emailValidation = await _validateEmailAsync(_emailController.text.trim());
+      if (emailValidation != null) {
+        throw Exception(emailValidation);
+      }
+      
+      _logger.i('✅ Duplicate validation passed, proceeding with registration...');
       final user = UserModel(
         fullName: _fullNameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
@@ -149,10 +163,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     } catch (e) {
       _logger.e('❌ Registration failed: $e');
       if (mounted) {
+        // Clean up error message by removing "Exception: " prefix
+        String errorMessage = e.toString();
+        if (errorMessage.startsWith('Exception: ')) {
+          errorMessage = errorMessage.substring(11);
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration failed: $e'),
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5), // Give users time to read the message
           ),
         );
       }
@@ -184,6 +205,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
     
     return null;
+  }
+
+  /// Validate phone number and check for duplicates (async validation)
+  Future<String?> _validatePhoneAsync(String? value) async {
+    // First do basic validation
+    final basicValidation = _validatePhone(value);
+    if (basicValidation != null) {
+      return basicValidation;
+    }
+    
+    // If basic validation passes, check for duplicates
+    try {
+      final duplicateError = await _storageService.checkForDuplicateUser(
+        phoneNumber: value!,
+        email: null,
+      );
+      return duplicateError;
+    } catch (e) {
+      // Don't fail validation if we can't check duplicates
+      _logger.w('Could not check for duplicate phone number: $e');
+      return null;
+    }
   }
 
   String? _validateName(String? value) {
@@ -218,6 +261,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
     
     return null;
+  }
+
+  /// Validate email and check for duplicates (async validation)
+  Future<String?> _validateEmailAsync(String? value) async {
+    // Email is optional, so empty value is OK
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    
+    // First do basic validation
+    final basicValidation = _validateEmail(value);
+    if (basicValidation != null) {
+      return basicValidation;
+    }
+    
+    // If basic validation passes, check for duplicates
+    try {
+      final duplicateError = await _storageService.checkForDuplicateUser(
+        phoneNumber: '', // We're only checking email here
+        email: value,
+      );
+      return duplicateError;
+    } catch (e) {
+      // Don't fail validation if we can't check duplicates
+      _logger.w('Could not check for duplicate email: $e');
+      return null;
+    }
   }
 
   String? _validatePassword(String? value) {

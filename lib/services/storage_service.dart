@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
+import 'database_service_rest.dart';
 
 class StorageService {
   static const _storage = FlutterSecureStorage();
@@ -9,17 +10,61 @@ class StorageService {
   static const String _registrationStatusKey = 'registration_status';
   
   final Logger _logger = Logger();
+  final DatabaseServiceRest _databaseService = DatabaseServiceRest();
+
+  /// Check if a user already exists with the same phone number or email
+  Future<String?> checkForDuplicateUser({
+    required String phoneNumber,
+    String? email,
+  }) async {
+    try {
+      _logger.i('🔍 Checking for duplicate user with phone: $phoneNumber');
+      
+      // Check for existing user by phone number
+      final existingUserByPhone = await _databaseService.getUserByPhone(phoneNumber);
+      if (existingUserByPhone != null) {
+        _logger.w('⚠️ User already exists with phone number: $phoneNumber');
+        return 'A user with this phone number already exists. Please use a different phone number or try logging in instead.';
+      }
+      
+      // Check for existing user by email if email is provided
+      if (email != null && email.trim().isNotEmpty) {
+        final existingUserByEmail = await _databaseService.getUserByEmail(email);
+        if (existingUserByEmail != null) {
+          _logger.w('⚠️ User already exists with email: $email');
+          return 'A user with this email address already exists. Please use a different email address or try logging in instead.';
+        }
+      }
+      
+      _logger.i('✅ No duplicate user found - registration can proceed');
+      return null; // No duplicates found
+    } catch (e) {
+      _logger.e('❌ Error checking for duplicate user: $e');
+      // Don't block registration if we can't check - just log the error
+      return null;
+    }
+  }
 
   // Save user registration data
   Future<void> saveRegistration(UserModel user) async {
     try {
+      // Check for duplicate users before saving
+      final duplicateError = await checkForDuplicateUser(
+        phoneNumber: user.phoneNumber ?? '',
+        email: user.email,
+      );
+      
+      if (duplicateError != null) {
+        throw Exception(duplicateError);
+      }
+      
       final userJson = jsonEncode(user.toJson());
       await _storage.write(key: _userKey, value: userJson);
       await _storage.write(key: _registrationStatusKey, value: 'completed');
       _logger.i('✅ User registration saved successfully');
     } catch (e) {
       _logger.e('❌ Failed to save registration: $e');
-      throw Exception('Failed to save registration data');
+      rethrow; // Re-throw to preserve the original error message
     }
   }
 
