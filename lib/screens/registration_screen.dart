@@ -187,8 +187,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   String? _validatePhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Phone number is required';
+    // Don't show validation error immediately when field is empty
+    // Only validate when user has actually interacted with the field
+    if (value == null || value.trim().isEmpty) {
+      return null; // Don't show error immediately
     }
     
     // Remove spaces and special characters (keep only digits and +)
@@ -209,7 +211,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   /// Validate phone number and check for duplicates (async validation)
   Future<String?> _validatePhoneAsync(String? value) async {
-    // First do basic validation
+    // During registration, phone number IS required
+    if (value == null || value.trim().isEmpty) {
+      return 'Phone number is required';
+    }
+    
+    // Do format validation
     final basicValidation = _validatePhone(value);
     if (basicValidation != null) {
       return basicValidation;
