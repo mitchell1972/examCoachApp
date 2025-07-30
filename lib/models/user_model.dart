@@ -235,8 +235,8 @@ class UserModel {
     // Set payment fields
     lastPaymentDate = paymentTime;
     paidUntil = paymentTime.add(const Duration(days: 7));
-    paymentReference = paymentReference;
-    amountPaid = amountPaid;
+    this.paymentReference = paymentReference;
+    this.amountPaid = amountPaid;
     
     // Update subscription status
     subscriptionStatus = 'active';

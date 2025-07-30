@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:exam_coach_app/services/storage_service.dart';
 import 'package:exam_coach_app/services/app_config.dart';
+import 'package:exam_coach_app/services/database_service_rest.dart';
 import 'package:exam_coach_app/models/user_model.dart';
 
 void main() {
@@ -15,6 +16,10 @@ void main() {
       
       // Initialize AppConfig for tests
       await AppConfig.initialize();
+      
+      // Configure database service for testing
+      final databaseService = DatabaseServiceRest();
+      databaseService.configureForTesting();
       
       // Create a simple in-memory storage for tests
       final Map<String, String> testStorage = {};

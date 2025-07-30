@@ -7,6 +7,7 @@ import 'package:exam_coach_app/screens/registration_screen.dart';
 import 'package:exam_coach_app/screens/login_screen.dart';
 import 'package:exam_coach_app/services/storage_service.dart';
 import 'package:exam_coach_app/services/app_config.dart';
+import 'package:exam_coach_app/services/database_service_rest.dart';
 
 // Mock MyApp for testing
 class MyApp extends StatelessWidget {
@@ -32,6 +33,10 @@ void main() {
       
       // Initialize AppConfig for tests
       await AppConfig.initialize();
+      
+      // Configure database service for testing
+      final databaseService = DatabaseServiceRest();
+      databaseService.configureForTesting();
       
       // Create a simple in-memory storage for tests
       final Map<String, String> testStorage = {};

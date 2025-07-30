@@ -7,6 +7,7 @@ import 'package:exam_coach_app/services/paystack_service.dart';
 import 'package:exam_coach_app/services/webhook_service.dart';
 import 'package:exam_coach_app/services/storage_service.dart';
 import 'package:exam_coach_app/services/app_config.dart';
+import 'package:exam_coach_app/services/database_service_rest.dart';
 import 'package:exam_coach_app/models/user_model.dart';
 import 'package:exam_coach_app/models/payment_models.dart';
 
@@ -61,6 +62,10 @@ void main() {
       // Initialize AppConfig
       await AppConfig.initialize();
       
+      // Configure database service for testing
+      final databaseService = DatabaseServiceRest();
+      databaseService.configureForTesting();
+      
       // Setup mock for flutter_secure_storage
       final Map<String, String> testStorage = {};
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -99,6 +104,7 @@ void main() {
         id: 'test_user_123',
         email: 'test@example.com',
         fullName: 'Test User',
+        phoneNumber: '+2348123456789',
         status: 'trial_ended',
         subscriptionStatus: 'none',
       );

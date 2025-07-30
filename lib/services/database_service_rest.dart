@@ -13,9 +13,55 @@ class DatabaseServiceRest {
 
   final Logger _logger = Logger();
   
+  // Test configuration
+  String? _testSupabaseUrl;
+  String? _testSupabaseKey;
+  bool _isTestMode = false;
+  
+  // Mock data for testing
+  final Map<String, UserModel> _mockUsersByPhone = {};
+  final Map<String, UserModel> _mockUsersByEmail = {};
+  
+  // Method to configure for tests
+  void configureForTesting({
+    String? supabaseUrl,
+    String? supabaseKey,
+  }) {
+    _testSupabaseUrl = supabaseUrl ?? 'https://test.supabase.co';
+    _testSupabaseKey = supabaseKey ?? 'test-key';
+    _isTestMode = true;
+    _logger.i('🧪 Database service configured for testing');
+  }
+  
+  // Add mock user for testing duplicate validation
+  void addMockUser(UserModel user) {
+    if (_isTestMode && user.phoneNumber != null) {
+      _mockUsersByPhone[user.phoneNumber!] = user;
+      if (user.email != null && user.email!.isNotEmpty) {
+        _mockUsersByEmail[user.email!] = user;
+      }
+      _logger.i('🧪 Added mock user for testing: ${user.phoneNumber}');
+    }
+  }
+  
+  // Clear mock data
+  void clearMockData() {
+    _mockUsersByPhone.clear();
+    _mockUsersByEmail.clear();
+    _logger.i('🧪 Cleared mock data');
+  }
+
+  
   // Supabase configuration
-  String get _supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
-  String get _supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
+  String get _supabaseUrl {
+    if (_isTestMode) return _testSupabaseUrl!;
+    return dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
+  }
+  
+  String get _supabaseAnonKey {
+    if (_isTestMode) return _testSupabaseKey!;
+    return dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
+  }
 
 
   // HTTP headers for API calls
@@ -126,6 +172,19 @@ class DatabaseServiceRest {
 
   /// Get user by email address
   Future<UserModel?> getUserByEmail(String email) async {
+    // In test mode, use mock data
+    if (_isTestMode) {
+      _logger.i('🧪 Test mode: Checking mock data for email: $email');
+      final mockUser = _mockUsersByEmail[email];
+      if (mockUser != null) {
+        _logger.i('🧪 Mock user found with email: $email');
+        return mockUser;
+      } else {
+        _logger.i('🧪 No mock user found with email: $email');
+        return null;
+      }
+    }
+    
     try {
       final response = await http.get(
         Uri.parse('$_supabaseUrl/rest/v1/users?email=eq.$email'),
@@ -153,6 +212,19 @@ class DatabaseServiceRest {
 
   /// Get user by phone number
   Future<UserModel?> getUserByPhone(String phoneNumber) async {
+    // In test mode, use mock data
+    if (_isTestMode) {
+      _logger.i('🧪 Test mode: Checking mock data for phone: $phoneNumber');
+      final mockUser = _mockUsersByPhone[phoneNumber];
+      if (mockUser != null) {
+        _logger.i('🧪 Mock user found with phone: $phoneNumber');
+        return mockUser;
+      } else {
+        _logger.i('🧪 No mock user found with phone: $phoneNumber');
+        return null;
+      }
+    }
+    
     try {
       final response = await http.get(
         Uri.parse('$_supabaseUrl/rest/v1/users?phone_number=eq.$phoneNumber'),

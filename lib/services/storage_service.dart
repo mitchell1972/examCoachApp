@@ -13,6 +13,7 @@ class StorageService {
   final DatabaseServiceRest _databaseService = DatabaseServiceRest();
 
   /// Check if a user already exists with the same phone number or email
+  /// Returns an error message if duplicate found, null if no duplicates
   Future<String?> checkForDuplicateUser({
     required String phoneNumber,
     String? email,
@@ -20,7 +21,12 @@ class StorageService {
     try {
       _logger.i('🔍 Checking for duplicate user with phone: $phoneNumber');
       
-      // Check for existing user by phone number
+      // Validate phone number format first
+      if (phoneNumber.trim().isEmpty) {
+        return 'Phone number is required';
+      }
+      
+      // Check for existing user by phone number - this is the priority check
       final existingUserByPhone = await _databaseService.getUserByPhone(phoneNumber);
       if (existingUserByPhone != null) {
         _logger.w('⚠️ User already exists with phone number: $phoneNumber');
@@ -40,7 +46,15 @@ class StorageService {
       return null; // No duplicates found
     } catch (e) {
       _logger.e('❌ Error checking for duplicate user: $e');
-      // Don't block registration if we can't check - just log the error
+      // For test environment, we'll configure the database service properly
+      // In production, if we can't check the database, we should still allow registration
+      // but log the issue for monitoring
+      if (e.toString().contains('NotInitializedError') || e.toString().contains('test')) {
+        // In test mode, we can proceed with mock data
+        _logger.w('⚠️ Database service not available - proceeding with registration');
+        return null;
+      }
+      // For other errors, allow registration but log
       return null;
     }
   }
