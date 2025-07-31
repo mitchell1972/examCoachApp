@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
 import 'registration_screen.dart';
 import 'login_screen.dart';
+import 'admin_login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -174,6 +175,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ],
                 ],
+                
+                // Admin Access Button (at the bottom)
+                const Spacer(),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AdminLoginScreen(),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.admin_panel_settings,
+                          size: 16,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Admin Access',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

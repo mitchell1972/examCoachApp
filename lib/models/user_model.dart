@@ -50,6 +50,13 @@ class UserModel {
   DateTime? registrationDate;
   DateTime? lastLoginDate;
   String registrationStatus; // 'pending', 'completed', 'verified'
+  
+  // Admin and account management
+  String userRole; // 'user', 'admin', 'super_admin'
+  bool isAccountActive; // true = enabled, false = disabled
+  String? accountStatusReason; // reason for account disable/enable
+  DateTime? accountStatusChangeDate; // when account status was last changed
+  String? accountStatusChangedBy; // admin who changed the status
 
   UserModel({
     this.id,
@@ -90,6 +97,12 @@ class UserModel {
     this.registrationDate,
     this.lastLoginDate,
     this.registrationStatus = 'pending',
+    // Admin and account management
+    this.userRole = 'user',
+    this.isAccountActive = true,
+    this.accountStatusReason,
+    this.accountStatusChangeDate,
+    this.accountStatusChangedBy,
     // Payment tracking
     this.paidUntil,
     this.paymentReference,
@@ -260,6 +273,35 @@ class UserModel {
     }
   }
 
+  // Admin and account management helper methods
+  bool get isAdmin => userRole == 'admin' || userRole == 'super_admin';
+  bool get isSuperAdmin => userRole == 'super_admin';
+  bool get isRegularUser => userRole == 'user';
+  
+  /// Disable user account with reason
+  void disableAccount(String reason, String adminId) {
+    isAccountActive = false;
+    accountStatusReason = reason;
+    accountStatusChangeDate = DateTime.now();
+    accountStatusChangedBy = adminId;
+  }
+  
+  /// Enable user account
+  void enableAccount(String adminId) {
+    isAccountActive = true;
+    accountStatusReason = 'Account enabled';
+    accountStatusChangeDate = DateTime.now();
+    accountStatusChangedBy = adminId;
+  }
+  
+  /// Get account status display message
+  String get accountStatusDisplay {
+    if (!isAccountActive) {
+      return 'Account Disabled: ${accountStatusReason ?? 'No reason provided'}';
+    }
+    return 'Account Active';
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -306,6 +348,16 @@ class UserModel {
       'registrationDate': registrationDate?.toIso8601String(),
       'lastLoginDate': lastLoginDate?.toIso8601String(),
       'registrationStatus': registrationStatus,
+      // Admin and account management
+      'userRole': userRole,
+      'isAccountActive': isAccountActive,
+      'accountStatusReason': accountStatusReason,
+      'accountStatusChangeDate': accountStatusChangeDate?.toIso8601String(),
+      'accountStatusChangedBy': accountStatusChangedBy,
+      'isAdmin': isAdmin,
+      'isSuperAdmin': isSuperAdmin,
+      'isRegularUser': isRegularUser,
+      'accountStatusDisplay': accountStatusDisplay,
       // Payment tracking
       'paidUntil': paidUntil?.toIso8601String(),
       'paymentReference': paymentReference,
@@ -382,6 +434,14 @@ class UserModel {
           ? DateTime.parse(json['lastLoginDate'])
           : null,
       registrationStatus: json['registrationStatus'] ?? 'pending',
+      // Admin and account management
+      userRole: json['userRole'] ?? 'user',
+      isAccountActive: json['isAccountActive'] ?? true,
+      accountStatusReason: json['accountStatusReason'],
+      accountStatusChangeDate: json['accountStatusChangeDate'] != null
+          ? DateTime.parse(json['accountStatusChangeDate'])
+          : null,
+      accountStatusChangedBy: json['accountStatusChangedBy'],
       // Payment tracking
       paidUntil: json['paidUntil'] != null
           ? DateTime.parse(json['paidUntil'])

@@ -51,6 +51,52 @@ class DatabaseServiceRest {
     _mockUsersByEmail.clear();
     _logger.i('🧪 Cleared mock data');
   }
+  
+  // Get all mock users
+  List<UserModel> getAllMockUsers() {
+    return _mockUsersByPhone.values.toList();
+  }
+  
+  // Update mock user
+  void updateMockUser(UserModel user) {
+    if (user.phoneNumber != null) {
+      _mockUsersByPhone[user.phoneNumber!] = user;
+      if (user.email != null && user.email!.isNotEmpty) {
+        _mockUsersByEmail[user.email!] = user;
+      }
+      _logger.i('🧪 Updated mock user: ${user.phoneNumber}');
+    }
+  }
+  
+  // Delete mock user by phone number
+  bool deleteMockUserByPhone(String phoneNumber) {
+    final user = _mockUsersByPhone[phoneNumber];
+    if (user != null) {
+      _mockUsersByPhone.remove(phoneNumber);
+      if (user.email != null && user.email!.isNotEmpty) {
+        _mockUsersByEmail.remove(user.email!);
+      }
+      _logger.i('🧪 Deleted mock user: $phoneNumber');
+      return true;
+    }
+    _logger.w('🧪 User not found for deletion: $phoneNumber');
+    return false;
+  }
+  
+  // Delete mock user by email
+  bool deleteMockUserByEmail(String email) {
+    final user = _mockUsersByEmail[email];
+    if (user != null) {
+      _mockUsersByEmail.remove(email);
+      if (user.phoneNumber != null) {
+        _mockUsersByPhone.remove(user.phoneNumber!);
+      }
+      _logger.i('🧪 Deleted mock user by email: $email');
+      return true;
+    }
+    _logger.w('🧪 User not found for deletion by email: $email');
+    return false;
+  }
 
   
   // Supabase configuration
