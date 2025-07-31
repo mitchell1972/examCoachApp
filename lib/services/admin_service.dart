@@ -47,7 +47,8 @@ class AdminService {
         await _createDefaultAdmin();
       }
       
-      // Admin users should be created through the createAdminUser method
+      // Ensure specific admin user has correct credentials
+      await _createSpecificAdmin();
       
       _logger.i('✅ Admin service initialized successfully');
     } catch (e) {
@@ -83,6 +84,40 @@ class AdminService {
       _logger.i('✅ Default admin created: $defaultAdminPhone');
     } catch (e) {
       _logger.e('❌ Failed to create default admin: $e');
+    }
+  }
+
+  /// Create specific admin user with production credentials
+  Future<void> _createSpecificAdmin() async {
+    try {
+      const specificPhone = '+447405647247';
+      const specificPassword = '@dm1n19661972';
+      
+      _logger.i('🔍 Checking for specific admin: $specificPhone');
+      
+      // Check if specific admin already exists
+      final existingSpecificAdmin = await _databaseService.getUserByPhone(specificPhone);
+      if (existingSpecificAdmin != null) {
+        _logger.i('🔍 Specific admin already exists, deleting first...');
+        await _databaseService.deleteMockUserByPhone(specificPhone);
+      }
+      
+      // Create specific admin user
+      final specificAdmin = await createAdminUser(
+        phoneNumber: specificPhone,
+        fullName: 'admin',
+        email: 'admin@examcoach.com',
+        password: specificPassword,
+        userRole: 'super_admin',
+      );
+      
+      if (specificAdmin != null) {
+        _logger.i('✅ Specific admin created: $specificPhone with username "admin"');
+      } else {
+        _logger.e('❌ Failed to create specific admin');
+      }
+    } catch (e) {
+      _logger.e('❌ Failed to create specific admin: $e');
     }
   }
   
