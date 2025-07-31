@@ -15,7 +15,6 @@ class AdminService {
   
   // Test mode - use in-memory storage instead of secure storage
   static bool _isTestMode = false;
-  static UserModel? _testCurrentAdmin;
   static String? _testAdminSession;
   
   // Default admin credentials for demo/development
@@ -25,14 +24,12 @@ class AdminService {
   /// Enable test mode - use in-memory storage instead of secure storage
   static void enableTestMode() {
     _isTestMode = true;
-    _testCurrentAdmin = null;
     _testAdminSession = null;
   }
   
   /// Disable test mode - use secure storage
   static void disableTestMode() {
     _isTestMode = false;
-    _testCurrentAdmin = null;
     _testAdminSession = null;
   }
   
@@ -189,7 +186,6 @@ class AdminService {
       
       if (_isTestMode) {
         // In test mode, use in-memory storage
-        _testCurrentAdmin = admin;
         _testAdminSession = jsonEncode(sessionData);
         _logger.i('✅ Admin session saved (test mode)');
       } else {
@@ -251,7 +247,6 @@ class AdminService {
     try {
       if (_isTestMode) {
         // In test mode, clear in-memory storage
-        _testCurrentAdmin = null;
         _testAdminSession = null;
         _logger.i('✅ Admin logged out successfully (test mode)');
       } else {
