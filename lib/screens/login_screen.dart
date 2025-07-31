@@ -483,7 +483,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
             ),
             
-            const Spacer(),
+            const SizedBox(height: 40),
             
             // SMS Verification Icon
             const Icon(
@@ -649,7 +649,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
             ),
             
-            const Spacer(),
+            const SizedBox(height: 40),
           ],
             ),
           ),
