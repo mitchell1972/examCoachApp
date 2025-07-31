@@ -75,10 +75,38 @@ class StorageService {
       final userJson = jsonEncode(user.toJson());
       await _storage.write(key: _userKey, value: userJson);
       await _storage.write(key: _registrationStatusKey, value: 'completed');
+      
+      // CRITICAL: Add user to mock database for future duplicate checking
+      // This ensures that subsequent registration attempts will find this user
+      // when checking for duplicates, preventing duplicate phone numbers
+      _databaseService.addMockUser(user);
+      _logger.i('✅ User added to mock database for duplicate prevention');
+      
       _logger.i('✅ User registration saved successfully');
     } catch (e) {
       _logger.e('❌ Failed to save registration: $e');
       rethrow; // Re-throw to preserve the original error message
+    }
+  }
+
+  // Initialize storage service and load existing users into mock database
+  Future<void> initialize() async {
+    try {
+      _logger.i('🔧 Initializing storage service...');
+      
+      // Load any existing registered user into mock database for duplicate checking
+      final existingUser = await getRegisteredUser();
+      if (existingUser != null && existingUser.phoneNumber != null) {
+        _databaseService.addMockUser(existingUser);
+        _logger.i('✅ Loaded existing user into mock database: ${existingUser.phoneNumber}');
+      } else {
+        _logger.i('ℹ️ No existing registered user found');
+      }
+      
+      _logger.i('✅ Storage service initialized successfully');
+    } catch (e) {
+      _logger.e('❌ Failed to initialize storage service: $e');
+      // Don't rethrow - app should continue even if initialization fails
     }
   }
 

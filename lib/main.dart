@@ -5,12 +5,14 @@ import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
 import 'services/twilio_auth_service.dart';
 import 'services/app_config.dart';
+import 'services/storage_service.dart';
 // import 'services/supabase_config.dart';  // Disabled due to Firebase conflicts
 import 'services/database_service_rest.dart';  // Firebase-free database service
 
 final Logger appLogger = Logger();
 late AuthService authService;
 late DatabaseServiceRest databaseService;  // Using REST API service
+late StorageService storageService;
 
 void main() async {
   // Ensure Flutter binding is initialized
@@ -30,15 +32,51 @@ void main() async {
     
     // Initialize Database Service - Firebase-free REST API approach
     databaseService = DatabaseServiceRest();
-    appLogger.i('✅ Firebase-free Database Service initialized successfully');
     
-    // Check database health
-    final isHealthy = await databaseService.isHealthy();
-    if (isHealthy) {
-      appLogger.i('✅ Database connection healthy - ready for 200K+ users');
-    } else {
-      appLogger.w('⚠️ Database connection issue - check Supabase credentials');
+    // Check environment variables and configure database service
+    String? supabaseUrl;
+    String? supabaseKey;
+    
+    try {
+      supabaseUrl = dotenv.env['SUPABASE_URL'];
+      supabaseKey = dotenv.env['SUPABASE_ANON_KEY'];
+    } catch (e) {
+      // dotenv not initialized - no .env file found
+      appLogger.w('⚠️ Environment variables not available: $e');
+      supabaseUrl = null;
+      supabaseKey = null;
     }
+    
+    appLogger.i('🔍 Environment check:');
+    appLogger.i('  SUPABASE_URL: ${supabaseUrl ?? 'null'}');
+    appLogger.i('  SUPABASE_ANON_KEY: ${supabaseKey?.isNotEmpty == true ? 'present' : 'null/empty'}');
+    
+    // Configure database service for demo mode if no valid credentials
+    bool needsDemoMode = supabaseUrl == null || 
+                        supabaseKey == null || 
+                        supabaseUrl.contains('your-project') || 
+                        supabaseKey.contains('your-anon-key') ||
+                        supabaseUrl.isEmpty ||
+                        supabaseKey.isEmpty;
+    
+    if (needsDemoMode) {
+      databaseService.configureForTesting();
+      appLogger.i('✅ Database Service configured for DEMO MODE (no valid .env credentials)');
+    } else {
+      appLogger.i('✅ Firebase-free Database Service initialized with production config');
+      
+      // Check database health only if we have real credentials
+      final isHealthy = await databaseService.isHealthy();
+      if (isHealthy) {
+        appLogger.i('✅ Database connection healthy - ready for 200K+ users');
+      } else {
+        appLogger.w('⚠️ Database connection issue - check Supabase credentials');
+      }
+    }
+    
+    // Initialize Storage Service and load existing users for duplicate checking
+    storageService = StorageService();
+    await storageService.initialize();
     
     // Initialize Authentication based on environment
     if (AppConfig.instance.isDevelopment) {
@@ -53,6 +91,9 @@ void main() async {
   } catch (error, stackTrace) {
     appLogger.e('Failed to initialize services', error: error, stackTrace: stackTrace);
     // Fall back to demo mode if initialization fails
+    databaseService = DatabaseServiceRest();
+    databaseService.configureForTesting();
+    storageService = StorageService();
     authService = DemoAuthService();
     appLogger.w('⚠️ Falling back to Demo Auth Service');
   }
