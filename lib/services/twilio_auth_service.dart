@@ -52,29 +52,44 @@ class TwilioAuthService implements AuthService {
         body: jsonEncode({'phoneNumber': phoneNumber}),
       );
       
-      if (response.statusCode != 200) {
+      _logger.i('Received response from send-otp API: ${response.statusCode} - ${response.body}');
+      
+      if (response.statusCode == 200) {
+        _logger.i('✅ OTP sent successfully');
+      } else {
         final errorBody = response.body;
         _logger.e('❌ Backend API error (${response.statusCode}): $errorBody');
         
+        // Try to parse error response
+        String errorMessage = 'Failed to send OTP';
+        try {
+          final errorData = jsonDecode(errorBody);
+          errorMessage = errorData['error'] ?? errorData['message'] ?? errorMessage;
+        } catch (e) {
+          // If we can't parse JSON, use the raw error body
+          errorMessage = errorBody;
+        }
+        
         // If backend is not configured, provide helpful error message
-        if (response.statusCode == 500 && errorBody.contains('Failed to send verification code')) {
+        if (response.statusCode == 500 && errorMessage.contains('Failed to send verification code')) {
           throw Exception('Backend SMS service not configured. Please set up Twilio credentials on Vercel.');
         }
         
-        throw Exception('Failed to send OTP: $errorBody');
+        throw Exception(errorMessage);
       }
-      
-      _logger.i('✅ OTP sent successfully');
-    } catch (e) {
-      _logger.e('❌ Failed to send OTP: $e');
-      throw Exception('Failed to send OTP: $e');
+    } catch (e, stackTrace) {
+      _logger.e('❌ Failed to send OTP: $e', error: e, stackTrace: stackTrace);
+      if (e is FormatException) {
+        throw Exception('Invalid response format from server');
+      }
+      throw Exception('Failed to send OTP: ${e.toString()}');
     }
   }
 
   @override
   Future<UserModel?> verifyOTP(String phoneNumber, String code) async {
     try {
-      _logger.i('Verifying OTP for $phoneNumber');
+      _logger.i('Verifying OTP for $phoneNumber with code: $code');
       
       if (_isDemoMode) {
         _logger.i('🔐 Demo mode: Verifying OTP code: $code');
@@ -115,12 +130,14 @@ class TwilioAuthService implements AuthService {
         }),
       );
       
+      _logger.i('Received response from verify-otp API: ${response.statusCode} - ${response.body}');
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _currentUser = UserModel(
-          id: data['userId'],
+          id: data['userId'] ?? 'user-${DateTime.now().millisecondsSinceEpoch}',
           phoneNumber: phoneNumber,
-          name: data['name'] ?? '',
+          name: data['name'] ?? 'Verified User',
           email: data['email'] ?? '',
           examInterest: '',
           examDate: null,
@@ -131,12 +148,16 @@ class TwilioAuthService implements AuthService {
         _logger.i('✅ OTP verified successfully');
         return _currentUser;
       } else {
+        final errorData = jsonDecode(response.body);
         _logger.e('❌ OTP verification failed: ${response.body}');
-        throw Exception('Invalid verification code');
+        throw Exception(errorData['error'] ?? 'Invalid verification code');
       }
-    } catch (e) {
-      _logger.e('❌ OTP verification error: $e');
-      throw Exception('Verification failed: $e');
+    } catch (e, stackTrace) {
+      _logger.e('❌ OTP verification error: $e', error: e, stackTrace: stackTrace);
+      if (e is FormatException) {
+        throw Exception('Invalid response format from server');
+      }
+      throw Exception('Verification failed: ${e.toString()}');
     }
   }
 

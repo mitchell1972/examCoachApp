@@ -89,6 +89,10 @@ class AppConfig extends ChangeNotifier {
     const bool isProduction = bool.fromEnvironment('FLUTTER_ENV', defaultValue: false);
     const String nodeEnv = String.fromEnvironment('NODE_ENV', defaultValue: '');
     
+    // Additional check for Vercel deployment
+    const bool isVercel = bool.fromEnvironment('VERCEL', defaultValue: false);
+    const String vercelEnv = String.fromEnvironment('VERCEL_ENV', defaultValue: '');
+    
     // Log environment detection for debugging
     final logger = Logger();
     logger.i('🔍 Environment Detection:');
@@ -96,11 +100,13 @@ class AppConfig extends ChangeNotifier {
     logger.i('  GITHUB_ACTIONS: $isGitHubActions');
     logger.i('  FLUTTER_ENV: $isProduction');
     logger.i('  NODE_ENV: $nodeEnv');
+    logger.i('  VERCEL: $isVercel');
+    logger.i('  VERCEL_ENV: $vercelEnv');
     logger.i('  kDebugMode: $kDebugMode');
     logger.i('  kProfileMode: $kProfileMode');
     logger.i('  kReleaseMode: $kReleaseMode');
     
-    if (isCI || isGitHubActions || nodeEnv == 'production') {
+    if (isCI || isGitHubActions || nodeEnv == 'production' || isVercel || vercelEnv == 'production') {
       // Production deployment (GitHub Actions, Netlify, Vercel, etc.)
       logger.i('🚀 Environment: PRODUCTION (Real SMS enabled)');
       return Environment.production;
@@ -295,4 +301,4 @@ class ConfigurationException implements Exception {
   
   @override
   String toString() => 'ConfigurationException: $message';
-} 
+}
