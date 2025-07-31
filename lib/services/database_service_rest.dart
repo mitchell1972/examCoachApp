@@ -53,14 +53,29 @@ class DatabaseServiceRest {
 
   
   // Supabase configuration
-  String get _supabaseUrl {
+    String get _supabaseUrl {
     if (_isTestMode) return _testSupabaseUrl!;
     return dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
   }
-  
+
   String get _supabaseAnonKey {
     if (_isTestMode) return _testSupabaseKey!;
     return dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
+  }
+  
+  /// Check if database service is properly configured
+  bool get _isConfigured {
+    if (_isTestMode) return true;
+    
+    final url = dotenv.env['SUPABASE_URL'];
+    final key = dotenv.env['SUPABASE_ANON_KEY'];
+    
+    return url != null && 
+           key != null && 
+           url.isNotEmpty && 
+           key.isNotEmpty &&
+           !url.contains('your-project') && 
+           !key.contains('your-anon-key');
   }
 
 
@@ -185,6 +200,12 @@ class DatabaseServiceRest {
       }
     }
     
+    // Check if database is properly configured
+    if (!_isConfigured) {
+      _logger.w('⚠️ Database not configured (.env file missing or invalid) - treating as no user found');
+      return null;
+    }
+    
     try {
       final response = await http.get(
         Uri.parse('$_supabaseUrl/rest/v1/users?email=eq.$email'),
@@ -223,6 +244,12 @@ class DatabaseServiceRest {
         _logger.i('🧪 No mock user found with phone: $phoneNumber');
         return null;
       }
+    }
+    
+    // Check if database is properly configured
+    if (!_isConfigured) {
+      _logger.w('⚠️ Database not configured (.env file missing or invalid) - treating as no user found');
+      return null;
     }
     
     try {
