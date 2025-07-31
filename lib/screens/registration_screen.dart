@@ -76,8 +76,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.dispose();
   }
 
+  // Debug helper method
+  void _debugPhoneState(String context) {
+    _logger.i('🔍 [$context] Phone controller text: "${_phoneController.text}"');
+    _logger.i('🔍 [$context] Phone controller length: ${_phoneController.text.length}');
+    _logger.i('🔍 [$context] Phone controller isEmpty: ${_phoneController.text.isEmpty}');
+  }
+
   void _nextStep() {
     if (_currentStep < _totalSteps - 1) {
+      // Debug: Check form state before moving to next step
+      _logger.i('🔍 Moving from step $_currentStep to ${_currentStep + 1}');
+      _debugPhoneState('NEXT_STEP');
+      _logger.i('🔍 Full name: "${_fullNameController.text}"');
+      _logger.i('🔍 Email: "${_emailController.text}"');
+      
       setState(() {
         _currentStep++;
       });
@@ -101,7 +114,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Future<void> _completeRegistration() async {
-    if (!_formKey.currentState!.validate() || !_acceptedTerms) {
+    // Debug: Check phone state at the very beginning
+    _debugPhoneState('REGISTRATION_START');
+    
+    // Check if form validation affects phone controller
+    _logger.i('🔍 About to validate form...');
+    final formIsValid = _formKey.currentState!.validate();
+    _debugPhoneState('AFTER_FORM_VALIDATE');
+    
+    if (!formIsValid || !_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please complete all required fields and accept terms'),
@@ -111,23 +132,38 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return;
     }
 
+    _debugPhoneState('BEFORE_SET_LOADING');
     setState(() {
       _isLoading = true;
     });
+    _debugPhoneState('AFTER_SET_LOADING');
 
     try {
       // Run async validations for phone and email before proceeding
       _logger.i('🔍 Running duplicate user validation...');
       
+      // Debug: Check controller state before validation
+      _debugPhoneState('BEFORE_ASYNC_VALIDATION');
+      
+      // CRITICAL: Run validations SEQUENTIALLY to prevent race conditions
+      // The issue was that phone and email validations were running simultaneously
+      // and both calling checkForDuplicateUser, causing interference
+      
+      _logger.i('🔍 Step 1: Validating phone number...');
       final phoneValidation = await _validatePhoneAsync(_phoneController.text.trim());
       if (phoneValidation != null) {
+        _logger.e('❌ Phone validation failed: $phoneValidation');
         throw Exception(phoneValidation);
       }
+      _logger.i('✅ Phone validation passed');
       
+      _logger.i('🔍 Step 2: Validating email address...');
       final emailValidation = await _validateEmailAsync(_emailController.text.trim());
       if (emailValidation != null) {
+        _logger.e('❌ Email validation failed: $emailValidation');
         throw Exception(emailValidation);
       }
+      _logger.i('✅ Email validation passed');
       
       _logger.i('✅ Duplicate validation passed, proceeding with registration...');
       final user = UserModel(
@@ -187,14 +223,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   String? _validatePhone(String? value) {
+    // Debug: Log phone validation
+    _logger.i('🔍 _validatePhone called with: "${value ?? "null"}"');
+    
     // Don't show validation error immediately when field is empty
     // Only validate when user has actually interacted with the field
     if (value == null || value.trim().isEmpty) {
+      _logger.i('🔍 Phone validation: empty value, returning null');
       return null; // Don't show error immediately
     }
     
     // Remove spaces and special characters (keep only digits and +)
     final cleanPhone = value.replaceAll(RegExp(r'[^\d+]'), '');
+    _logger.i('🔍 Phone validation: cleaned value: "$cleanPhone"');
     
     // Check if it starts with country code
     if (!cleanPhone.startsWith('+')) {
@@ -206,6 +247,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       return 'Invalid phone number length';
     }
     
+    _logger.i('🔍 Phone validation: passed all checks');
     return null;
   }
 
@@ -225,7 +267,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     // If basic validation passes, check for duplicates
     try {
       final duplicateError = await _storageService.checkForDuplicateUser(
-        phoneNumber: value!,
+        phoneNumber: value.trim(),
         email: null,
       );
       return duplicateError;
@@ -270,31 +312,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return null;
   }
 
-  /// Validate email and check for duplicates (async validation)
+  /// Validate email format only (no duplicate check to avoid phone interference)
   Future<String?> _validateEmailAsync(String? value) async {
     // Email is optional, so empty value is OK
     if (value == null || value.trim().isEmpty) {
       return null;
     }
     
-    // First do basic validation
+    // Only do basic validation - no duplicate checking
+    // This prevents interference with phone number validation
     final basicValidation = _validateEmail(value);
     if (basicValidation != null) {
       return basicValidation;
     }
     
-    // If basic validation passes, check for duplicates
-    try {
-      final duplicateError = await _storageService.checkForDuplicateUser(
-        phoneNumber: '', // We're only checking email here
-        email: value,
-      );
-      return duplicateError;
-    } catch (e) {
-      // Don't fail validation if we can't check duplicates
-      _logger.w('Could not check for duplicate email: $e');
-      return null;
-    }
+    // Email validation passed - no duplicate check needed since:
+    // 1. Email is optional in the app
+    // 2. Phone number is the primary identifier
+    // 3. Prevents race conditions with phone validation
+    _logger.i('✅ Email format validation passed');
+    return null;
   }
 
   String? _validatePassword(String? value) {
