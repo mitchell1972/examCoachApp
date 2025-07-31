@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import '../models/user_model.dart';
@@ -55,20 +56,34 @@ class DatabaseServiceRest {
   // Supabase configuration
     String get _supabaseUrl {
     if (_isTestMode) return _testSupabaseUrl!;
-    return dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
+    try {
+      return dotenv.env['SUPABASE_URL'] ?? 'https://your-project.supabase.co';
+    } catch (e) {
+      return 'https://your-project.supabase.co';
+    }
   }
 
   String get _supabaseAnonKey {
     if (_isTestMode) return _testSupabaseKey!;
-    return dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
+    try {
+      return dotenv.env['SUPABASE_ANON_KEY'] ?? 'your-anon-key';
+    } catch (e) {
+      return 'your-anon-key';
+    }
   }
   
   /// Check if database service is properly configured
   bool get _isConfigured {
     if (_isTestMode) return true;
     
-    final url = dotenv.env['SUPABASE_URL'];
-    final key = dotenv.env['SUPABASE_ANON_KEY'];
+    String? url;
+    String? key;
+    try {
+      url = dotenv.env['SUPABASE_URL'];
+      key = dotenv.env['SUPABASE_ANON_KEY'];
+    } catch (e) {
+      return false;
+    }
     
     return url != null && 
            key != null && 
@@ -337,4 +352,14 @@ class DatabaseServiceRest {
       }
     }).toList();
   }
+
+  // Test helpers - only use in testing
+  @visibleForTesting
+  String get testSupabaseUrl => _supabaseUrl;
+  
+  @visibleForTesting
+  String get testSupabaseAnonKey => _supabaseAnonKey;
+  
+  @visibleForTesting
+  bool get testIsConfigured => _isConfigured;
 } 
