@@ -1303,32 +1303,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 if (_currentStep == _totalSteps - 1) {
                   _completeRegistration();
                 } else {
-                  // Validate current step
-                  bool canProceed = true;
-                  
-                  if (_currentStep == 0) {
-                    canProceed = _fullNameController.text.trim().isNotEmpty &&
-                                _phoneController.text.trim().isNotEmpty &&
-                                _validatePhone(_phoneController.text) == null &&
-                                _validateName(_fullNameController.text) == null;
-                  } else if (_currentStep == 1) {
-                    canProceed = _currentClass != null && 
-                                _schoolType != null && 
-                                _studyFocus.isNotEmpty;
-                  } else if (_currentStep == 2) {
-                    canProceed = _scienceSubjects.isNotEmpty;
-                  }
-                  
-                  if (canProceed) {
-                    _nextStep();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please complete all required fields'),
-                        backgroundColor: Colors.orange,
-                      ),
-                    );
-                  }
+                  // Use the comprehensive step validation system
+                  _nextStep();
                 }
               },
               style: ElevatedButton.styleFrom(
