@@ -53,7 +53,15 @@ class TwilioAuthService implements AuthService {
       );
       
       if (response.statusCode != 200) {
-        throw Exception('Failed to send OTP: ${response.body}');
+        final errorBody = response.body;
+        _logger.e('❌ Backend API error (${response.statusCode}): $errorBody');
+        
+        // If backend is not configured, provide helpful error message
+        if (response.statusCode == 500 && errorBody.contains('Failed to send verification code')) {
+          throw Exception('Backend SMS service not configured. Please set up Twilio credentials on Vercel.');
+        }
+        
+        throw Exception('Failed to send OTP: $errorBody');
       }
       
       _logger.i('✅ OTP sent successfully');

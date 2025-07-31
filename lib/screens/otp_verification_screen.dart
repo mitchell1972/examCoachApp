@@ -131,10 +131,18 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       
       if (!mounted) return;
       
+      // Check if this is a demo mode error with valid codes
+      String errorMessage = error.toString().replaceAll('Exception: ', '');
+      if (errorMessage.contains('Demo codes:')) {
+        // Extract and format the demo codes message
+        errorMessage = 'Invalid code. Try: 123456, 000000, 111111, or 555555';
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('❌ OTP verification failed: ${error.toString().replaceAll('Exception: ', '')}'),
+          content: Text('❌ $errorMessage'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
         ),
       );
     } finally {
@@ -242,6 +250,42 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 12),
+                
+                // Show demo codes hint in development mode
+                if (authService is DemoAuthService)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Colors.orange.withOpacity(0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          '🎭 Demo Mode',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange.shade200,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Use any of these codes: 123456, 000000, 111111, 555555',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange.shade100,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
                 const SizedBox(height: 24),
                 
                 // OTP Input Row
