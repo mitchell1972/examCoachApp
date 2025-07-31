@@ -85,6 +85,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   void _nextStep() {
     if (_currentStep < _totalSteps - 1) {
+      // Validate current step before proceeding
+      _logger.i('🔍 Validating step $_currentStep before navigation...');
+      
+      if (!_validateCurrentStep()) {
+        _logger.w('⚠️ Step $_currentStep validation failed, preventing navigation');
+        return;
+      }
+      
       // Debug: Check form state before moving to next step
       _logger.i('🔍 Moving from step $_currentStep to ${_currentStep + 1}');
       _debugPhoneState('NEXT_STEP');
@@ -371,6 +379,153 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
     
     return null;
+  }
+
+  /// Validate the current step before allowing navigation
+  bool _validateCurrentStep() {
+    switch (_currentStep) {
+      case 0: // Basic Information step
+        return _validateBasicInformationStep();
+      case 1: // Academic Profile step
+        return _validateAcademicProfileStep();
+      case 2: // Subject Selection step
+        return _validateSubjectSelectionStep();
+      case 3: // Study Goals step
+        return _validateStudyGoalsStep();
+      default:
+        return true;
+    }
+  }
+
+  /// Validate Step 0: Basic Information (Name, Phone, Email, Password, Confirm Password)
+  bool _validateBasicInformationStep() {
+    _logger.i('🔍 Validating basic information step...');
+    
+    // Validate full name
+    final nameError = _validateName(_fullNameController.text);
+    if (nameError != null) {
+      _logger.w('❌ Name validation failed: $nameError');
+      _showValidationError('Full Name Error', nameError);
+      return false;
+    }
+    
+    // Validate phone number
+    final phoneError = _validatePhone(_phoneController.text);
+    if (phoneError != null) {
+      _logger.w('❌ Phone validation failed: $phoneError');
+      _showValidationError('Phone Number Error', phoneError);
+      return false;
+    }
+    
+    // Validate email
+    final emailError = _validateEmail(_emailController.text);
+    if (emailError != null) {
+      _logger.w('❌ Email validation failed: $emailError');
+      _showValidationError('Email Error', emailError);
+      return false;
+    }
+    
+    // Validate password
+    final passwordError = _validatePassword(_passwordController.text);
+    if (passwordError != null) {
+      _logger.w('❌ Password validation failed: $passwordError');
+      _showValidationError('Password Error', passwordError);
+      return false;
+    }
+    
+    // Validate password confirmation - CRITICAL for password matching
+    final confirmPasswordError = _validateConfirmPassword(_confirmPasswordController.text);
+    if (confirmPasswordError != null) {
+      _logger.w('❌ Password confirmation failed: $confirmPasswordError');
+      _showValidationError('Password Confirmation Error', confirmPasswordError);
+      return false;
+    }
+    
+    _logger.i('✅ Basic information validation passed');
+    return true;
+  }
+
+  /// Validate Step 1: Academic Profile (Class, School Type, Study Focus)
+  bool _validateAcademicProfileStep() {
+    _logger.i('🔍 Validating academic profile step...');
+    
+    if (_currentClass == null || _currentClass!.isEmpty) {
+      _showValidationError('Academic Profile Error', 'Please select your current class');
+      return false;
+    }
+    
+    if (_schoolType == null || _schoolType!.isEmpty) {
+      _showValidationError('Academic Profile Error', 'Please select your school type');
+      return false;
+    }
+    
+    if (_studyFocus.isEmpty) {
+      _showValidationError('Academic Profile Error', 'Please select at least one study focus');
+      return false;
+    }
+    
+    _logger.i('✅ Academic profile validation passed');
+    return true;
+  }
+
+  /// Validate Step 2: Subject Selection (Science Subjects)
+  bool _validateSubjectSelectionStep() {
+    _logger.i('🔍 Validating subject selection step...');
+    
+    if (_scienceSubjects.isEmpty) {
+      _showValidationError('Subject Selection Error', 'Please select at least one science subject you want to study');
+      return false;
+    }
+    
+    _logger.i('✅ Subject selection validation passed');
+    return true;
+  }
+
+  /// Validate Step 3: Study Goals (Target Exam Date, Study Hours)
+  bool _validateStudyGoalsStep() {
+    _logger.i('🔍 Validating study goals step...');
+    
+    if (_targetExamDate == null) {
+      _showValidationError('Study Goals Error', 'Please select your target exam date');
+      return false;
+    }
+    
+    if (_studyHoursPerWeek == null || _studyHoursPerWeek! <= 0) {
+      _showValidationError('Study Goals Error', 'Please select how many hours per week you plan to study');
+      return false;
+    }
+    
+    _logger.i('✅ Study goals validation passed');
+    return true;
+  }
+
+  /// Show validation error message to user
+  void _showValidationError(String title, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(message),
+          ],
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
   }
 
   @override
