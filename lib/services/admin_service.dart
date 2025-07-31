@@ -99,7 +99,7 @@ class AdminService {
       final existingSpecificAdmin = await _databaseService.getUserByPhone(specificPhone);
       if (existingSpecificAdmin != null) {
         _logger.i('🔍 Specific admin already exists, deleting first...');
-        await _databaseService.deleteMockUserByPhone(specificPhone);
+        _databaseService.deleteMockUserByPhone(specificPhone);
       }
       
       // Create specific admin user
