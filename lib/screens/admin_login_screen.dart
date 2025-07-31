@@ -301,50 +301,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
                         const SizedBox(height: 24),
 
-                        // Demo Credentials Info
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.blue),
-                          ),
-                          child: Column(
-                            children: [
-                              const Row(
-                                children: [
-                                  Icon(Icons.info, color: Colors.blue, size: 16),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Demo Admin Credentials:',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Phone: ${AdminService.defaultAdminPhone}',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 12,
-                                ),
-                              ),
-                              Text(
-                                'Password: ${AdminService.defaultAdminPassword}',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
                         // Login Button
                         SizedBox(
                           width: double.infinity,
