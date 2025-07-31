@@ -79,6 +79,10 @@ void main() async {
     await storageService.initialize();
     
     // Initialize Authentication based on environment
+    appLogger.i('🔍 Initializing Auth Service - Environment: ${AppConfig.instance.environment.name}');
+    appLogger.i('🔍 Is Development: ${AppConfig.instance.isDevelopment}');
+    appLogger.i('🔍 Is Production: ${AppConfig.instance.isProduction}');
+    
     if (AppConfig.instance.isDevelopment) {
       authService = DemoAuthService();
       appLogger.i('✅ Demo Auth Service: Initialized successfully');
@@ -86,6 +90,8 @@ void main() async {
       authService = TwilioAuthService();
       appLogger.i('✅ Twilio Auth Service: Initialized successfully');
     }
+    
+    appLogger.i('✅ Auth Service Type: ${authService.runtimeType}');
     
     appLogger.i('App initialization completed successfully');
   } catch (error, stackTrace) {

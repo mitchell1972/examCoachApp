@@ -86,6 +86,8 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
       }
 
       // Use Twilio Authentication Service to verify OTP
+      _logger.i('🔍 Using auth service type: ${authService.runtimeType}');
+      _logger.i('🔍 Current environment - isDevelopment: ${AppConfig.instance.isDevelopment}, isProduction: ${AppConfig.instance.isProduction}');
       final verifiedUser = await authService.verifyOTP(phoneNumber, _currentOTP);
 
       if (!mounted) return;
