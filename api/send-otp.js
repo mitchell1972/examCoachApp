@@ -35,8 +35,16 @@ module.exports = async (req, res) => {
     
     const { phoneNumber } = req.body;
     
+    // Log the incoming request for debugging
+    console.log('Received send-otp request:', { phoneNumber, body: req.body });
+    
     if (!phoneNumber) {
       return res.status(400).json({ error: 'Phone number is required' });
+    }
+    
+    // Validate phone number format
+    if (typeof phoneNumber !== 'string' || phoneNumber.length < 10) {
+      return res.status(400).json({ error: 'Invalid phone number format' });
     }
     
     // Initialize Twilio client with validated credentials

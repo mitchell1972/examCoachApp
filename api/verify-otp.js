@@ -35,8 +35,21 @@ module.exports = async (req, res) => {
     
     const { phoneNumber, code } = req.body;
     
+    // Log the incoming request for debugging
+    console.log('Received verify-otp request:', { phoneNumber, code, body: req.body });
+    
     if (!phoneNumber || !code) {
       return res.status(400).json({ error: 'Phone number and code are required' });
+    }
+    
+    // Validate phone number format
+    if (typeof phoneNumber !== 'string' || phoneNumber.length < 10) {
+      return res.status(400).json({ error: 'Invalid phone number format' });
+    }
+    
+    // Validate code format
+    if (typeof code !== 'string' || code.length !== 6 || !/^\d{6}$/.test(code)) {
+      return res.status(400).json({ error: 'Invalid code format - must be 6 digits' });
     }
     
     // Initialize Twilio client with validated credentials
