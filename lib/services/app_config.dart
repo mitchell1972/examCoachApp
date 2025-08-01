@@ -94,7 +94,7 @@ class AppConfig extends ChangeNotifier {
     const String vercelEnv = String.fromEnvironment('VERCEL_ENV', defaultValue: '');
     
     // Check for browser environment (web deployment)
-    final bool isWeb = identical(0, 0.0); // This is true in JavaScript/ web environment
+    final bool isWeb = kIsWeb; // Use Flutter's built-in web detection
     final String? hostname = _getHostname();
     
     // Log environment detection for debugging
