@@ -98,6 +98,7 @@ class AppConfig extends ChangeNotifier {
     final String? hostname = _getHostname();
     
     // Log environment detection for debugging
+    // ignore: prefer_const_declarations
     final logger = Logger();
     logger.i('🔍 Environment Detection:');
     logger.i('  CI: $isCI');
