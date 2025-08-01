@@ -46,6 +46,10 @@ class TwilioAuthService implements AuthService {
       }
       
       // In production, call your backend API
+      _logger.i('🔍 Sending request to: $_baseUrl/send-otp');
+      _logger.i('🔍 Request headers: ${ {'Content-Type': 'application/json'} }');
+      _logger.i('🔍 Request body: ${jsonEncode({'phoneNumber': phoneNumber})}');
+      
       final response = await http.post(
         Uri.parse('$_baseUrl/send-otp'),
         headers: {'Content-Type': 'application/json'},
@@ -121,6 +125,10 @@ class TwilioAuthService implements AuthService {
       }
       
       // In production, call your backend API
+      _logger.i('🔍 Sending request to: $_baseUrl/verify-otp');
+      _logger.i('🔍 Request headers: ${ {'Content-Type': 'application/json'} }');
+      _logger.i('🔍 Request body: ${jsonEncode({'phoneNumber': phoneNumber, 'code': code})}');
+      
       final response = await http.post(
         Uri.parse('$_baseUrl/verify-otp'),
         headers: {'Content-Type': 'application/json'},
