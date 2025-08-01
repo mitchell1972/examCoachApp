@@ -93,6 +93,10 @@ class AppConfig extends ChangeNotifier {
     const bool isVercel = bool.fromEnvironment('VERCEL', defaultValue: false);
     const String vercelEnv = String.fromEnvironment('VERCEL_ENV', defaultValue: '');
     
+    // Check for browser environment (web deployment)
+    final bool isWeb = identical(0, 0.0); // This is true in JavaScript/ web environment
+    final String? hostname = _getHostname();
+    
     // Log environment detection for debugging
     final logger = Logger();
     logger.i('🔍 Environment Detection:');
@@ -105,12 +109,28 @@ class AppConfig extends ChangeNotifier {
     logger.i('  kDebugMode: $kDebugMode');
     logger.i('  kProfileMode: $kProfileMode');
     logger.i('  kReleaseMode: $kReleaseMode');
+    logger.i('  isWeb: $isWeb');
+    logger.i('  hostname: $hostname');
     
-    if (isCI || isGitHubActions || nodeEnv == 'production' || isVercel || vercelEnv == 'production') {
-      // Production deployment (GitHub Actions, Netlify, Vercel, etc.)
-      logger.i('🚀 Environment: PRODUCTION (Real SMS enabled)');
+    // Check if we're running on Vercel in production
+    if (isVercel || vercelEnv == 'production' || hostname?.contains('vercel.app') == true) {
+      logger.i('🚀 Environment: PRODUCTION (Vercel deployment detected)');
       return Environment.production;
-    } else if (kDebugMode) {
+    }
+    
+    // Check for other production environments
+    if (isCI || isGitHubActions || nodeEnv == 'production') {
+      logger.i('🚀 Environment: PRODUCTION (CI/CD deployment detected)');
+      return Environment.production;
+    }
+    
+    // Check for web deployment in release mode
+    if (isWeb && kReleaseMode) {
+      logger.i('🚀 Environment: PRODUCTION (Web release mode detected)');
+      return Environment.production;
+    }
+    
+    if (kDebugMode) {
       // Local development with hot reload
       logger.i('🎭 Environment: DEVELOPMENT (Demo mode)');
       return Environment.development;
@@ -122,6 +142,16 @@ class AppConfig extends ChangeNotifier {
       // Release mode but not CI (local release testing)
       logger.i('🎭 Environment: DEVELOPMENT (Local release)');
       return Environment.development;
+    }
+  }
+  
+  /// Get hostname for web environment detection
+  String? _getHostname() {
+    try {
+      // This will only work in web environment
+      return Uri.base.host;
+    } catch (e) {
+      return null;
     }
   }
   
