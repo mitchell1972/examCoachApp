@@ -82,6 +82,18 @@ void main() async {
     appLogger.i('🔍 Initializing Auth Service - Environment: ${AppConfig.instance.environment.name}');
     appLogger.i('🔍 Is Development: ${AppConfig.instance.isDevelopment}');
     appLogger.i('🔍 Is Production: ${AppConfig.instance.isProduction}');
+    appLogger.i('🔍 kDebugMode: $kDebugMode');
+    appLogger.i('🔍 kReleaseMode: $kReleaseMode');
+    appLogger.i('🔍 kProfileMode: $kProfileMode');
+    
+    // Check environment variables
+    appLogger.i('🔍 Environment Variables:');
+    appLogger.i('  VERCEL: ${const String.fromEnvironment('VERCEL')}');
+    appLogger.i('  VERCEL_ENV: ${const String.fromEnvironment('VERCEL_ENV')}');
+    appLogger.i('  NODE_ENV: ${const String.fromEnvironment('NODE_ENV')}');
+    appLogger.i('  FLUTTER_ENV: ${const String.fromEnvironment('FLUTTER_ENV')}');
+    appLogger.i('  CI: ${const String.fromEnvironment('CI')}');
+    appLogger.i('  GITHUB_ACTIONS: ${const String.fromEnvironment('GITHUB_ACTIONS')}');
     
     if (AppConfig.instance.isDevelopment) {
       authService = DemoAuthService();
@@ -92,6 +104,8 @@ void main() async {
     }
     
     appLogger.i('✅ Auth Service Type: ${authService.runtimeType}');
+    appLogger.i('✅ Auth Service is Demo: ${authService is DemoAuthService}');
+    appLogger.i('✅ Auth Service is Twilio: ${authService is TwilioAuthService}');
     
     appLogger.i('App initialization completed successfully');
   } catch (error, stackTrace) {
